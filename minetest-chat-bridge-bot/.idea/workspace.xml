@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="9c19d535-266a-4559-b18f-40a5e7a4aeb2" name="Default Changelist" comment="" />
+    <list default="true" id="9c19d535-266a-4559-b18f-40a5e7a4aeb2" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../minetest-chat-bridge-irc-bot/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../minetest-chat-bridge-irc-bot/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../minetest-chat-bridge-irc-bot/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../minetest-chat-bridge-irc-bot/.idea/workspace.xml" afterDir="false" />
+    </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <ignored path="$PROJECT_DIR$/.gradle/" />
     <ignored path="$PROJECT_DIR$/build/" />
@@ -182,6 +187,9 @@
       <find>setGlobalChannel</find>
     </findStrings>
   </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$PROJECT_DIR$/src/main/java/appguru/Main.java" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/src/main/java/chat/Bot.java" root0="FORCE_HIGHLIGHTING" />
@@ -259,6 +267,7 @@
     <option name="width" value="1297" />
     <option name="height" value="700" />
   </component>
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
     <navigator proportions="" version="1">
       <foldersAlwaysOnTop value="true" />
@@ -298,6 +307,7 @@
     </panes>
   </component>
   <component name="PropertiesComponent">
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1546986025511" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/../minetest-chat-bridge-irc-bot" />
     <property name="restartRequiresConfirmation" value="false" />
@@ -429,7 +439,7 @@
       <window_info id="Favorites" order="6" sideWeight="0.50156415" side_tool="true" weight="0.16804865" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.3295099" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.498618" visible="true" weight="0.2706002" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.498618" visible="true" weight="0.2711519" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.39877924" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
