@@ -1,0 +1,11 @@
+{
+  "scheme" : {
+    "minetest" : {"mention_prefix":"#FFFF00@", "mention_delim":"#FFFF00, ", "delim":"#FFFF00 : "},
+    "other" : null
+  },
+
+  "bridges" : {
+    "discord" : null,
+    "irc" : null
+  }
+}
