@@ -2,8 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="7f697b14-8ab3-4a7f-89a5-7b970fc18e63" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/../minetest-chat-bridge-bot/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../minetest-chat-bridge-bot/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Readme.md" beforeDir="false" afterPath="$PROJECT_DIR$/../Readme.md" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />

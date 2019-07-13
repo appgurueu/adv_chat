@@ -2,10 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9c19d535-266a-4559-b18f-40a5e7a4aeb2" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../minetest-chat-bridge-irc-bot/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../minetest-chat-bridge-irc-bot/.idea/vcs.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../minetest-chat-bridge-irc-bot/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../minetest-chat-bridge-irc-bot/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Readme.md" beforeDir="false" afterPath="$PROJECT_DIR$/../Readme.md" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <ignored path="$PROJECT_DIR$/.gradle/" />

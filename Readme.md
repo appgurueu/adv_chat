@@ -3,6 +3,7 @@
 > One Mod to bring them all, and in the darkness bind them  
 
 \- adapted quote from "Lord of the Rings"
+With "all" other chat mods are meant.
 
 Adds roles, colors, unicode, hud notifications, and chat bridges (IRC & discord).
 
@@ -16,8 +17,9 @@ Code licensed under the GPLv3 (GNU Public License Version 3). Written by Lars Mu
 
 ## Terminology 
 
-Chatter : Participant in chat, be it a Minetest player, IRC user, or Discord member
-Targets/Mentions : 
+Chatter : Participant in chat, be it a Minetest player, IRC user, or Discord member  
+Role : "Group" of chatters  
+Targets/Mentions : Roles or chatters mentioned using `@`
 
 ## Features
 
