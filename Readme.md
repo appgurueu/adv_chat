@@ -1,9 +1,9 @@
-# Advanced Chat(`adv_chat`)
+# Advanced Chat (`adv_chat`)
+
 > One Mod to rule them all, One Mod to find them,  
 > One Mod to bring them all, and in the darkness bind them  
 
 \- adapted quote from "Lord of the Rings"
-With "all" other chat mods are meant.
 
 Adds roles, colors, unicode, hud notifications, and chat bridges (IRC & discord).
 
@@ -15,26 +15,56 @@ Depends on [`modlib`](https://github.com/appgurueu/modlib). Modlib has been upda
 
 Code licensed under the GPLv3 (GNU Public License Version 3). Written by Lars Mueller alias LMD or appguru(eu).
 
-## Terminology 
+## Links
 
-Chatter : Participant in chat, be it a Minetest player, IRC user, or Discord member  
-Role : "Group" of chatters  
-Targets/Mentions : Roles or chatters mentioned using `@`
+* [GitHub](https://github.com/appgurueu/voxelizer) - sources, issue tracking, contributing
+* [Discord](https://discord.gg/ysP74by) - discussion, chatting
+* [Minetest Forum](https://forum.minetest.net/viewtopic.php?f=9&t=22845) - (more organized) discussion
+* [ContentDB](https://content.minetest.net/packages/LMD/voxelizer/) - releases (downloading from GitHub is recommended)
+
+## Setup
+
+In order to properly use `adv_chat`, you'll have to meet the following prerequisites:
+
+* `modlib` Minetest mod installed and enabled as hard dependency and additionally also `cmdlib` (recommended)
+* `adv_chat` needs to be installed, enabled and added to the trusted mods in settings/`minetest.conf`
+* [LuaSocket](https://luarocks.org/modules/luasocket/luasocket) should be installed (`sudo luarocks install luasocket` on Ubuntu)
+* Complete [Java](https://www.java.com/de/) 8 or ideally newer installation under your system path (accessible from terminal via `java`)
+
+Then just install it like any other mod and enjoy your greatly improved chat experience!
+
+## Terminology
+
+Chatter: Participant in chat, be it a Minetest player, IRC user, or Discord member  
+Role: "Group" of chatters  
+Targets/Mentions: Roles or chatters mentioned using `@`
 
 ## Features
 
-* Discord & IRC chat bridges
+* Discord & IRC chat bridges, login & commands
+* Blocking
 * Colorization
+* Style preservation
 * Unicode
 * Mentions
 * HUD channels/notifications
 * Scheduled messages for offline players
 
+## Changes
+
+### 🎃 Halloween Update
+
+* Proper formatting support
+* More configuration options
+* Remote login for chatcommand execution
+* Many under-the-hood changes cleaning up stuff & fixing bugs (improving the code & architecture)
+* See `config_help.md` and the sources for all details
+
 ## API
 
 ### HUD notifications
 
-See the `hud_channels.lua` for how it works and `test.lua` for a score change demo running with random values.
+See `hud_channels.lua` for how it works and `test.lua` for a score change demo running with random values.
 
 ### Votes
 
@@ -58,14 +88,14 @@ See the code and `config_help.md`. Feel free to contact me.
 
 ### Unicode support
 
-This mod adds unicode support. Simply use the unicode codepoint in hexadecimal format prefixed by `U+`. To get a "slight smile" (🙂), you'd use `U+1F643`. Note that not all fonts fully support Unicode.
+This mod adds unicode support. Simply use the unicode codepoint in hexadecimal format prefixed by `U+`. To get a "slight smile" (🙂), you'd use `U+1F642`. Note that not all fonts fully support Unicode.
 Use the `/chat say` command to open a text entry field to paste text.
 
 ### Real-time chat
 
 Use `@` at the beginning to message players or roles before your message.
 There are 3 special mentions : `minetest`, `irc` and `discord`.
-Can be separated by comma **&** whitespace. Examples : 
+Can be separated by comma **&** whitespace. Examples:
 
 * `@singleplayer hi, singleplayer !` - message `hi, singleplayer !` is sent to singleplayer
 * `lol(or whitespaces) @singleplayer hi` - message is just sent in global chat
@@ -103,7 +133,7 @@ Summarized, the Discord Chat Bridge works quite similar to the IRC one, with som
 Making Minetest & IRC chat compatible with Discord required the introduction of restrictions to simplify and reduce confusion.
 
 * No double nicknames on Discord. If there are double nicknames, one of them gets an appendix, which is not guaranteed to be the same each time. So better make sure this doesn't happen.
-* Spaces (` `) in Discord nicknames are replaced by underscores (`_`)
+* Spaces (` `) and commata (`,`) in Discord nicknames are replaced by underscores (`_`)
 
 ### Internal process bridge protocol
 

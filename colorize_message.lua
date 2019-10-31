@@ -1,35 +1,39 @@
+-- Converts "#XXXXXX" color codes to colors
 function colorize_message(message)
     local rope={}
-    --IFNDEF bridge
+    --IFNDEF discord
     local otherrope={}
     --ENDIF
-    local last_index=1
-    for i=1, string.len(message) do
-        local c=string.byte(message:sub(i,i))
-        if c == hashtag then
+    local i=1
+    while i <= message:len() do
+        local c=message:sub(i,i)
+        if c == string.char(0x1b) and message:sub(i+1, i+4) == "(c@#" and message:sub(i+11, i+11) == ")" then
+            table.insert(rope, message:sub(i, i+11))
+            i=i+11
+            goto continue
+        elseif c == "#" then
             for j=i+1, i+6 do
-                local c2=string.byte(string.upper(message:sub(j,j)))
-                if c2:len() == 0 or not string_ext.is_hexadecimal(c2) then
-                    i=j
+                local c2=message:sub(j,j):upper()
+                if c2=="" or not ((c2 >= "0" and c2 <= "9") or (c2 >= "A" and c2 <= "F")) then
                     goto nocolor
                 end
             end
-            local colorstring=minetest.get_color_escape_sequence(string.sub(message, i, i+6))
-            table.insert(rope, message:sub(last_index, i-1))
-            --IFNDEF bridge
-            table.insert(otherrope, message:sub(last_index, i-1))
-            --ENDIF
-            table.insert(rope, colorstring)
-            last_index=i+7
-            ::nocolor::
+            table.insert(rope, minetest.get_color_escape_sequence(message:sub(i, i+6)))
+            i=i+6
+            goto continue
         end
+        ::nocolor::
+        table.insert(rope, c)
+        --IFNDEF discord
+        table.insert(otherrope, c)
+        --ENDIF
+        ::continue::
+        i=i+1
     end
-    table.insert(rope, message:sub(last_index))
-    --IFNDEF bridge
-    table.insert(otherrope, message:sub(last_index))
-    --ENDIF
-    return table.concat(rope, "")
-    --IFNDEF bridge
-    , table.concat(otherrope, "")
+    return table.concat(rope)
+    --IFNDEF discord
+    , table.concat(otherrope)
     --ENDIF
 end
+
+load_schemes()

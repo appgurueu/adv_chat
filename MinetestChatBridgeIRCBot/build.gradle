@@ -1,0 +1,25 @@
+apply plugin: 'java'
+apply plugin: 'jacoco'
+apply plugin: 'application'
+
+
+description = 'Minetest Chat Bridge IRC Bot'
+
+mainClassName = 'appguru.Main'
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    testCompile 'junit:junit:4.12'
+}
+
+jar {
+    manifest {
+        attributes(
+            'Created-By': "Gradle ${gradle.gradleVersion}",
+            'Main-Class': "appguru.Main"
+        )
+    }
+}

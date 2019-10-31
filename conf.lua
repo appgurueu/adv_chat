@@ -1,25 +1,36 @@
-local schemedef={mention_prefix={type="string"},
-mention_delim={type="string"},
-delim={type="string"}}
+local schemedef={
+    message_prefix={type="string"},
+    mention_prefix={type="string"},
+    mention_delim={type="string"},
+    content_prefix={type="string"},
+    message_suffix={type="string"},
+}
 
 local conf_spec={type="table", children={
-    scheme={type="table", required_children={
+    schemes={type="table", required_children={
         minetest=schemedef
     }, possible_children={
-        other=schemedef
+        irc=schemedef,
+        discord=schemedef
     }},
     bridges={
         type="table",
         possible_children={
-            irc={type="table", children={
-                port={type="number", range={0, 65535}},
-                network={type="string"},
-                nickname={type="string"},
-                channelname={type="string"},
-                ssl={type="boolean"},
-                prefix={type="string"},
-                minetest_prefix={type="string"}
-            }},
+            irc={type="table", required_children={
+                    port={type="number", range={0, 65535}},
+                    network={type="string"},
+                    nickname={type="string"},
+                    channelname={type="string"},
+                    ssl={type="boolean"},
+                    prefix={type="string"},
+                    minetest_prefix={type="string"}
+                },
+                possible_children={
+                    bridge={type="string", possible_values={"files", "sockets"}},
+                    convert_minetest_colors={type="string", possible_values={"disabled", "hex", "safer", "safest"}}, 
+                    handle_discord_markdown={type="boolean"},
+                    handle_minetest_markdown={type="boolean"}
+                }},
             discord={type="table", required_children={
                     token={type="string"},
                     channelname={type="string"},
@@ -29,15 +40,45 @@ local conf_spec={type="table", children={
                 possible_children={
                     blacklist={type="table", keys={type="string"}},
                     whitelist={type="table", keys={type="string"}},
-                    guild_id={type="string"}
+                    guild_id={type="string"},
+                    bridge={type="string", possible_values={"files", "sockets"}},
+                    convert_internal_markdown={type="boolean"},
+                    convert_minetest_markdown={type="boolean"},
+                    handle_irc_styles={type="string", possible_values={"escape_markdown", "convert", "disabled"}}
                 }
-            }
+            },
+            command_blacklist={type="table", keys={type="number"}, values={type="string"}},
+            command_whitelist={type="table", keys={type="number"}, values={type="string"}}
         }
     }
 }}
 
 local config=conf.import("adv_chat", conf_spec)
 table_ext.add_all(getfenv(1), config)
+
+function load_schemes()
+    for k, v in pairs(schemes.minetest) do
+        schemes.minetest[k] = colorize_message(v)
+    end
+
+    for _,s in pairs({"irc", "discord"}) do
+        if not schemes[s] then
+            schemes[s] = {}
+            for k, v in pairs(schemes.minetest) do
+                schemes[s][k] = minetest.strip_colors(v)
+            end
+        end
+    end
+
+    load_schemes = nil
+end
+
+if not bridges.irc.style_conversion then
+    bridges.irc.style_conversion={}
+    if not bridges.irc.style_conversion.colors then
+        bridges.irc.style_conversion.colors="disabled"
+    end
+end
 
 if bridges.discord then
 
@@ -55,6 +96,25 @@ if bridges.discord then
     else
         if not whitelist_empty then
             bridges.discord.blacklist={}
+        end
+    end
+
+end
+
+if bridges.discord or bridges.irc then
+
+    bridges.command_blacklist = table_ext.set(bridges.command_blacklist or {})
+    bridges.command_whitelist = table_ext.set(bridges.command_whitelist or {})
+    local blacklist_empty=table_ext.is_empty(bridges.command_blacklist)
+    local whitelist_empty=table_ext.is_empty(bridges.command_whitelist or {})
+    if blacklist_empty then
+        if not whitelist_empty then
+            bridges.command_blacklist=setmetatable(bridges.command_blacklist, {__index=function(value)
+                if bridges.command_whitelist[value] then
+                    return nil
+                end
+                return true
+            end})
         end
     end
 
