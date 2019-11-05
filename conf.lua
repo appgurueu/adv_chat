@@ -73,7 +73,7 @@ function load_schemes()
     load_schemes = nil
 end
 
-if not bridges.irc.style_conversion then
+if bridges.irc and not bridges.irc.style_conversion then
     bridges.irc.style_conversion={}
     if not bridges.irc.style_conversion.colors then
         bridges.irc.style_conversion.colors="disabled"
