@@ -170,7 +170,9 @@ minetest.chat_send_all=function(msg)
     adv_message.internal=true
     send_to_all(adv_message)
 end
+--ENDIF
 
+--IFNDEF bridge
 minetest.original_chat_send_player=minetest.chat_send_player
 minetest.chat_send_player=function(name, msg)
     local chatter=chatters[name]
@@ -183,6 +185,8 @@ minetest.chat_send_player=function(name, msg)
     local adv_message=message.new(nil, nil, msg)
     adv_message.internal=true
     local to_be_sent=message.build(adv_message, chatter.service)
+--ENDIF
+
     --IFNDEF irc
     if chatter.irc then
         irc_bridge.write("[PMS]"..chatter.name.." "..to_be_sent)
@@ -193,6 +197,8 @@ minetest.chat_send_player=function(name, msg)
         discord_bridge.write("[PMS]#FFFFFF "..chatter.name.." "..to_be_sent)
     end
     --ENDIF
+
+--IFNDEF bridge
 end
 --ENDIF
 

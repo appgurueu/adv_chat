@@ -1,6 +1,6 @@
 {
   "schemes" : {
-    "minetest" : {"message_prefix": "", "mention_prefix": "#FFFF00@", "mention_delim": "#FFFF00, ", "content_prefix": "#FFFF00: #FFFFFF"}, 
+    "minetest" : {"message_prefix": "", "message_suffix": "", "mention_prefix": "#FFFF00@", "mention_delim": "#FFFF00, ", "content_prefix": "#FFFF00: #FFFFFF"}, 
     "other" : null
   },
 

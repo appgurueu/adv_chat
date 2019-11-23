@@ -492,7 +492,7 @@ function irc_to_minetest(irc)
     return table.concat(rope)
 end
 
-local color_conv = bridges.irc.convert_minetest_colors
+local color_conv = (bridges.irc and bridges.irc.convert_minetest_colors) or "hex"
 
 if color_conv == "hex" then -- always use hex, no matter what
     function convert_color_to_irc(color)
