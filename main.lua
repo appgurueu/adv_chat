@@ -4,10 +4,39 @@
 -- * log config (should messages which are not sent to all, pms be logged etc), issues with GDPR and similar stuff possible
 -- * add commands for registering/unregistering roles & adding/removing roles, but this is more of an API
 
-log.create_channel("adv_chat") -- Create log channel
-data.create_mod_storage("adv_chat") --Create mod storage
-player_ext.set_property_default("adv_chat.roles",{})
-player_ext.set_property_default("adv_chat.blocked",{chatters={}, roles={}})
+modlib.log.create_channel("adv_chat") -- Create log channel
+modlib.data.create_mod_storage("adv_chat") --Create mod storage
+modlib.player.set_property_default("adv_chat.roles",{})
+modlib.player.set_property_default("adv_chat.blocked",{chatters={}, roles={}})
+
+registered_on_chat_messages = {}
+
+function register_on_chat_message(func)
+    table.insert(registered_on_chat_messages, func)
+end
+
+register_on_chat_message(function(sendername, content, msg)
+    if not msg.targets then
+        modlib.log.write("adv_chat", "[MSG] "..sendername..": "..content)
+    end
+end)
+
+function unregister_on_chat_message(func)
+    for index, func_2 in modlib.table.rpairs(func) do
+        if func == func_2 then
+            table.remove(registered_on_chat_messages, index)
+        end
+    end
+end
+
+function call_registered_on_chat_messages(name, message, msg_info)
+    for _, func in ipairs(registered_on_chat_messages) do
+        if func(name, message, msg_info) then
+            return true
+        end
+    end
+    return false
+end
 
 channels={} --channelname -> definition : {hud_pos, mode, autoremove, max_messages, max_lines, wrap_chars, smartwrap}
 roles={} -- Role -> players -> true
@@ -62,6 +91,12 @@ end
 
 function send_to_targets(msg)
     message.mentionpart(msg)
+    if modlib.table.is_empty(msg.valid_targets) then
+        return
+    end
+    if message.handle_on_chat_messages(msg) then
+        return msg.handled_by_on_chat_messages
+    end
     --IFNDEF bridge
     local discord_mentioned, irc_mentioned=msg.targets.discord, msg.targets.irc
     --ENDIF
@@ -236,6 +271,9 @@ function get_color(chatter)
 end
 
 function send_to_all(msg)
+    if message.handle_on_chat_messages(msg) then
+        return msg.handled_by_on_chat_messages
+    end
     --IFNDEF irc
     if msg.sent_to ~= "irc" then
         irc_bridge.write("[MSG]"..message.build(msg, "irc"))
@@ -358,7 +396,7 @@ on_chat_message=function(sender, msg)
         local adv_msg=message.new(chatters[sender], mentions, msg_content)
         message.mentionpart(adv_msg)
         table.insert(mentions, sender)
-        send_to_targets(adv_msg)--sender, table_ext.set(mentions), msg, mt_msg, "nobody")
+        send_to_targets(adv_msg)
         if #adv_msg.invalid_mentions == 1 then
             minetest.chat_send_player(sender, "The target "..adv_msg.invalid_mentions[1].." is inexistant.")
         elseif #adv_msg.invalid_mentions > 1 then

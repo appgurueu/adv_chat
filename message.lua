@@ -82,18 +82,21 @@ function message.mentionpart(msg)
     if not msg.mentionpart then
         msg.invalid_mentions={}
         msg.targets={}
+        msg.valid_targets={}
         msg.mentionpart={}
         for _, mention in ipairs(msg.mentions or {}) do
             if not msg.targets[mention] then
                 msg.targets[mention]=true
                 if roles[mention] then
-                    table.insert(msg.mentionpart,roles[mention].color)
+                    table.insert(msg.mentionpart, roles[mention].color)
                     table.insert(msg.mentionpart, mention)
+                    msg.valid_targets[mention] = roles[mention]
                 elseif chatters[mention] then
                     table.insert(msg.mentionpart, chatters[mention].color)
                     table.insert(msg.mentionpart, mention)
+                    msg.valid_targets[mention] = chatters[mention]
                 else
-                    table.insert(msg.invalid_mentions,mention)
+                    table.insert(msg.invalid_mentions, mention)
                 end
             end
         end
@@ -196,7 +199,6 @@ function message.mentionpart_target(msg, target)
     return msg[text]
 end
 
-
 function message.build(msg, target)
     local build=target.."_build"
     if not msg[build] then
@@ -224,4 +226,12 @@ function message.build(msg, target)
         msg[build]=builder.scheme.message_prefix..(source or "")..(mentions or "")..content..builder.scheme.message_suffix
     end
     return msg[build]
+end
+
+function message.handle_on_chat_messages(msg)
+    local on_chat_messages = call_registered_on_chat_messages(msg.chatter.name, msg.content, msg)
+    if on_chat_messages then
+        msg.handled_by_on_chat_messages = on_chat_messages
+        return on_chat_messages
+    end
 end
