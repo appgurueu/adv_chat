@@ -69,16 +69,17 @@ bridge.listen(function(line)
         local chatter=parts[1].."[discord]"
         join(chatter, {color=parts[2], roles={}, discord=true})
         if string_ext.starts_with(line, "[JOI]") then
-            minetest.chat_send_all(get_color(chatter)..chatter..minetest.get_color_escape_sequence("#FFFFFF").." joined.")
+            minetest.chat_send_all(mt_color(chatter)..chatter..minetest.get_color_escape_sequence("#FFFFFF").." joined.")
         end
     elseif string_ext.starts_with(line, "[EXT]") then
-        chatters[linecontent.."[discord]"]=nil
-        minetest.chat_send_all(linecontent.." left.")
+        local chatter = linecontent .. "[discord]"
+        minetest.chat_send_all(mt_color(chatter)..chatter..minetest.get_color_escape_sequence("#FFFFFF").." left.")
+        leave(chatter)
     elseif string_ext.starts_with(line, "[NCK]") then
         local parts=string_ext.split(linecontent, " ", 2) --nick & newnick
-        chatters[parts[1].."[discord]"]=nil
-        chatters[parts[2].."[discord]"]=true
-        minetest.chat_send_all(parts[1].."[discord] is now known as "..parts[2].."[discord]")
+        local chattername=parts[1].."[discord]"
+        local new_chattername=parts[2].."[discord]"
+        rename(chattername, new_chattername)
     elseif string_ext.starts_with(line, "[ROL]") then
         local parts=string_ext.split(linecontent, " ", 3) --name, color, nicks
         if not bridges.discord.blacklist[parts[1]] then

@@ -38,6 +38,28 @@ function call_registered_on_chat_messages(name, message, msg_info)
     return false
 end
 
+registered_on_joinplayers = {}
+
+function register_on_joinplayer(func)
+    table.insert(registered_on_joinplayers, func)
+end
+
+register_on_joinplayer(function(player)
+    if get_color(player:get_player_name()) == "#FFFFFF" then
+        chatters[player:get_player_name()].color = roles.minetest.color
+    end
+end)
+
+
+function call_registered_on_joinplayers(player)
+    for _, func in ipairs(registered_on_joinplayers) do
+        if func(player) then
+            return true
+        end
+    end
+    return false
+end
+
 channels={} --channelname -> definition : {hud_pos, mode, autoremove, max_messages, max_lines, wrap_chars, smartwrap}
 roles={} -- Role -> players -> true
 chatters={} -- Chatter -> stuff
@@ -180,17 +202,45 @@ function join(name, def)
     to_be_sent[name]=nil
 end
 
+function core.send_join_message(name) end
+
+function send_join_message(name)
+    minetest.chat_send_all(mt_color(name)..name..minetest.get_color_escape_sequence("#FFFFFF").." joined.")
+end
+
+function rename(chattername, new_chattername)
+    chatters[new_chattername]=chatters[chattername]
+    transfer_roles(chattername, new_chattername)
+    chatters[chattername]=nil
+    minetest.chat_send_all(mt_color(new_chattername)..chattername..minetest.get_color_escape_sequence("#FFFFFF").." is now known as "..mt_color(new_chattername)..new_chattername)
+end
+
 function leave(name)
+    remove_roles(name)
     chatters[name]=nil
 end
 
+function core.send_leave_message(name, timeout) end
+
+function send_leave_message(name, timed_out)
+    local message = mt_color(name)..name..minetest.get_color_escape_sequence("#FFFFFF").." left"
+    if timed_out then
+        message = message .. " (timed out)"
+    end
+    minetest.chat_send_all(message .. ".")
+end
+
 minetest.register_on_joinplayer(function(player)
-    join(player:get_player_name(), {color="#66FF66", roles={}, blocked={chatters={}, roles={}}, minetest=true})
+    join(player:get_player_name(), {color=modlib.player.get_color(player), roles={}, blocked={chatters={}, roles={}}, minetest=true})
     add_role(player:get_player_name(), "minetest")
+    if not call_registered_on_joinplayers(player) then
+        send_join_message(player:get_player_name())
+    end
 end)
 
-minetest.register_on_leaveplayer(function(player)
-    roles.minetest.affected[player:get_player_name()]=nil
+minetest.register_on_leaveplayer(function(player, timed_out)
+    send_leave_message(player:get_player_name(), timed_out)
+    leave(player:get_player_name())
 end)
 
 function register_role(rolename, roledef)
@@ -262,12 +312,29 @@ function remove_role(player, role, expected_value)
     end
 end
 
--- deprecated, minetest-only
+function remove_roles(chatter)
+    for role, _ in pairs(chatters[chatter].roles) do
+        roles[role].affected[chatter] = nil
+        chatters[chatter].roles[role] = nil
+    end
+end
+
+function transfer_roles(chatter, new_chatter)
+    for role, _ in pairs(chatters[chatter].roles) do
+        roles[role].affected[new_chatter] = roles[role].affected[chatter]
+        roles[role].affected[chatter] = nil
+    end
+end
+
 function get_color(chatter)
     if chatters[chatter] then
         return chatters[chatter].color or "#FFFFFF"
     end
     return "#FFFFFF"
+end
+
+function mt_color(chattername)
+    return minetest.get_color_escape_sequence(get_color(chattername))
 end
 
 function send_to_all(msg)
