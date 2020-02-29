@@ -22,7 +22,7 @@ function build_socket_bridge(name, logs)
     local ip, port = server:getsockname()
     local logs=logs or minetest.get_worldpath().."/bridges/"..name.."/logs.txt"
     minetest.mkdir(minetest.get_worldpath().."/bridges/"..name)
-    file_ext.create_if_not_exists(logs, "")
+    modlib.file.create_if_not_exists(logs, "")
     minetest.register_on_shutdown(function()
         server:close()
     end)
@@ -52,7 +52,7 @@ function build_socket_bridge(name, logs)
             if next(available) then
                 local line, error = self.client:receive("*l")
                 if not error then
-                    if string_ext.starts_with(line, "[KIL]") then
+                    if modlib.text.starts_with(line, "[KIL]") then
                         minetest.request_shutdown("adv_chat: "..name..": process terminated: "..line:sub(6))
                     else
                         line_consumer(line)
@@ -68,30 +68,30 @@ function build_socket_bridge(name, logs)
 end
 
 function build_file_bridge(name, input, output, logs)
-    file_ext.process_bridge_build(name, input, output, logs)
+    modlib.file.process_bridge_build(name, input, output, logs)
     local self = {
-        info={name=name, ref=file_ext.process_bridges[name]},
+        info={name=name, ref=modlib.file.process_bridges[name]},
         serve=function()
-            return file_ext.process_bridge_serve(name)
+            return modlib.file.process_bridge_serve(name)
         end,
         write=function(line)
-            return file_ext.process_bridge_write(name, line)
+            return modlib.file.process_bridge_write(name, line)
         end,
         listen=function(line_consumer)
             function consumer(line)
-                if string_ext.starts_with(line, "[PIN]") then
+                if modlib.text.starts_with(line, "[PIN]") then
                     self.last_ping = minetest.get_gametime()
-                elseif string_ext.starts_with(line, "[KIL]") then
+                elseif modlib.text.starts_with(line, "[KIL]") then
                     minetest.request_shutdown("adv_chat: "..name..": process terminated: "..line:sub(6))
                 else
                     return line_consumer(line)
                 end
             end
-            return file_ext.process_bridge_listen(name, consumer)
+            return modlib.file.process_bridge_listen(name, consumer)
         end
     }
     self.start=function(process)
-        file_ext.process_bridge_start(name, process, os_execute)
+        modlib.file.process_bridge_start(name, process, os_execute)
         self.last_ping = minetest.get_gametime()
         minetest.register_globalstep(function()
             if minetest.get_gametime()-self.last_ping > ping_timeout then

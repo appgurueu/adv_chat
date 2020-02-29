@@ -70,12 +70,12 @@ scheme={minetest={mention_prefix=minetest.get_color_escape_sequence("#FFFF66")..
                   delim=" : "}}
 
 function save_data()
-    data.save_json("chatroles", "to_be_sent", to_be_sent)
+    modlib.data.save_json("chatroles", "to_be_sent", to_be_sent)
 end
 
-to_be_sent=data.load_json("chatroles","to_be_sent") or {}
+to_be_sent=modlib.data.load_json("chatroles","to_be_sent") or {}
 
-mt_ext.register_globalstep(30, save_data) -- TODO introduce config var
+modlib.minetest.register_globalstep(30, save_data) -- TODO introduce config var
 minetest.register_on_shutdown(save_data)
 
 -- TODO override minetest chat send player ?
@@ -125,7 +125,7 @@ function send_to_targets(msg)
     for target, _ in pairs(msg.targets) do
         if not chatters[target] then
             if roles[target] then
-                table_ext.add_all(msg.targets, roles[target].affected)
+                modlib.table.add_all(msg.targets, roles[target].affected)
             end
             msg.targets[target]=nil
         end
@@ -245,7 +245,7 @@ end)
 
 function register_role(rolename, roledef)
     roles[rolename]={title=roledef.title, color=roledef.color or "#FFFFFF",affected={}}
-    player_ext.register_forbidden_name(rolename)
+    modlib.player.register_forbidden_name(rolename)
 end
 
 --IFNDEF bridge
@@ -291,7 +291,7 @@ register_role("minetest",{color="#66FF66"})
 
 function unregister_role(rolename)
     roles[rolename]=nil
-    player_ext.unregister_forbidden_name(rolename)
+    modlib.player.unregister_forbidden_name(rolename)
 end
 
 function add_role(player, role, value)
@@ -365,7 +365,7 @@ end
 
 function send_to_players(msg, players, origin)
     for playername,_ in pairs(players) do
-        local blocked=player_ext.get_property(playername, "chatroles.blocked")
+        local blocked=modlib.player.get_property(playername, "chatroles.blocked")
         if blocked.players[origin] then
             goto continue
             for role,_ in ipairs(blocked.roles) do
@@ -383,7 +383,7 @@ function get_affected_by_mentions(mentions)
     local affected={}
     for _, mention in pairs(mentions) do
         if roles[mention] then
-            table_ext.add_all(affected, roles[mention].affected)
+            modlib.table.add_all(affected, roles[mention].affected)
         elseif minetest.get_player_by_name(mention) then
             affected[mention]=true
         end
@@ -456,9 +456,9 @@ on_chat_message=function(sender, msg)
 
         msg_content=msg:sub(delim_space+1)
         local msg_header=msg:sub(2, delim_space-1)
-        local parts=string_ext.split_without_limit(msg_header,",")
+        local parts=modlib.text.split_without_limit(msg_header,",")
         for _, part in pairs(parts) do
-            table.insert(mentions, string_ext.trim(part, " "))
+            table.insert(mentions, modlib.text.trim(part, " "))
         end
         local adv_msg=message.new(chatters[sender], mentions, msg_content)
         message.mentionpart(adv_msg)
@@ -482,7 +482,7 @@ on_chat_message=function(sender, msg)
 end
 minetest.register_on_chat_message(on_chat_message)
 
-local prefix = (cmd_ext and "chat ") or "chat_"
+local prefix = (cmdlib and "chat ") or "chat_"
 
 minetest.register_chatcommand(prefix.."msg",{
     params = "<name> <message>",
@@ -494,7 +494,7 @@ minetest.register_chatcommand(prefix.."msg",{
             return false, "No message specified"
         else
             local playername=param:sub(1,delim-1)
-            if minetest.player_exists(playername) or string_ext.ends_with(playername, "[irc]") or string_ext.ends_with(playername, "[discord]") then
+            if minetest.player_exists(playername) or modlib.text.ends_with(playername, "[irc]") or modlib.text.ends_with(playername, "[discord]") then
                 local message=colorize_message(param:sub(delim+1))
                 if not to_be_sent[playername] then
                     to_be_sent[playername]={}
@@ -534,7 +534,7 @@ minetest.register_chatcommand(prefix.."block", {
     description = "Block messages from chatter or role",
     privs={},
     func = function(sendername, param)
-        param=string_ext.trim(param)
+        param=modlib.text.trim(param)
         if param:len() == 0 or (not chatters[param] and not roles[param]) then
             return false, "No valid chatter name or role given."
         end
@@ -558,7 +558,7 @@ minetest.register_chatcommand(prefix.."unblock", {
     description = "Unblock messages from chatter or role",
     privs={},
     func = function(sendername, param)
-        param=string_ext.trim(param)
+        param=modlib.text.trim(param)
         if param:len() == 0 or (not chatters[param] and not roles[param]) then
             return false, "No valid chatter name or role given."
         end
@@ -582,11 +582,11 @@ minetest.register_chatcommand(prefix.."login", {
     description = "Log in as (fake) player to execute chatcommands as them",
     privs = {chatter=true},
     func = function(sendername, param)
-        param=string_ext.trim(param)
+        param=modlib.text.trim(param)
         if param:len() == 0 then
             return false, "No arguments given - missing name and password."
         end
-        local name, password = unpack(string_ext.split(param, " ", 2))
+        local name, password = unpack(modlib.text.split(param, " ", 2))
         password = password or ""
         local auth = minetest.get_auth_handler().get_auth(name)
         if auth and minetest.check_password_entry(name, auth.password, password) then

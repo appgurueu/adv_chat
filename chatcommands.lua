@@ -6,10 +6,10 @@ function minetest.get_player_privs(playername)
     return minetest.original_get_player_privs(playername)
 end
 
-if cmd_ext then
+if cmdlib then
     function call_chatcommand(chatter, call)
         local last_space, next_space = 1, call:find(" ")
-        local command_trie, command_name = cmd_ext.chatcommands
+        local command_trie, command_name = cmdlib.chatcommands
         local cmd, suggestion
         local total_command_name = {}
         repeat
@@ -41,7 +41,7 @@ if cmd_ext then
     end
 else
     function call_chatcommand(chatter, call)
-        local name, params = unpack(string_ext.split(call, " ", 2))
+        local name, params = unpack(modlib.text.split(call, " ", 2))
         if bridges.command_blacklist[name] then
             return false, "Command only available from Minetest."
         end

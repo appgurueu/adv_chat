@@ -53,8 +53,8 @@ local conf_spec={type="table", children={
     }
 }}
 
-local config=conf.import("adv_chat", conf_spec)
-table_ext.add_all(getfenv(1), config)
+local config=modlib.conf.import("adv_chat", conf_spec)
+modlib.table.add_all(getfenv(1), config)
 
 function load_schemes()
     for k, v in pairs(schemes.minetest) do
@@ -82,8 +82,8 @@ end
 
 if bridges.discord then
 
-    local blacklist_empty=table_ext.is_empty(bridges.discord.blacklist or {})
-    local whitelist_empty=table_ext.is_empty(bridges.discord.whitelist or {})
+    local blacklist_empty=modlib.table.is_empty(bridges.discord.blacklist or {})
+    local whitelist_empty=modlib.table.is_empty(bridges.discord.whitelist or {})
     if blacklist_empty then
         if not whitelist_empty then
             bridges.discord.blacklist=setmetatable(bridges.discord.blacklist, {__index=function(value)
@@ -103,10 +103,10 @@ end
 
 if bridges.discord or bridges.irc then
 
-    bridges.command_blacklist = table_ext.set(bridges.command_blacklist or {})
-    bridges.command_whitelist = table_ext.set(bridges.command_whitelist or {})
-    local blacklist_empty=table_ext.is_empty(bridges.command_blacklist)
-    local whitelist_empty=table_ext.is_empty(bridges.command_whitelist or {})
+    bridges.command_blacklist = modlib.table.set(bridges.command_blacklist or {})
+    bridges.command_whitelist = modlib.table.set(bridges.command_whitelist or {})
+    local blacklist_empty=modlib.table.is_empty(bridges.command_blacklist)
+    local whitelist_empty=modlib.table.is_empty(bridges.command_whitelist or {})
     if blacklist_empty then
         if not whitelist_empty then
             bridges.command_blacklist=setmetatable(bridges.command_blacklist, {__index=function(value)

@@ -67,7 +67,7 @@ local irc_style_to_md={
     [irc_strikethrough]="~~", -- Strikethrough
 }
 
-local md_style_to_irc=table_ext.flip(irc_style_to_md)
+local md_style_to_irc=modlib.table.flip(irc_style_to_md)
 
 local irc_escape={
     [irc_bold]=true, [irc_italics]=true, [irc_underlined]=true, [irc_strikethrough]="~~", [irc_disable]=true, [irc_color_reverse]=true, [irc_monospace]=true
@@ -153,7 +153,7 @@ function strip_markdown(markdown)
         else
             local tag, offset = trie.find_longest(markdown_trie, markdown, i)
             if tag then
-                for index, tag_index in table_ext.rpairs(tags) do
+                for index, tag_index in modlib.table.rpairs(tags) do
                     local conversion = res[tag_index].conversion and res[tag_index].conversion[tag.name]
                     if res[tag_index].name == tag.name or conversion then
                         if tag.space_sensitive and markdown:sub(i-1,i-1) == " " then
@@ -222,7 +222,7 @@ function markdown_to_irc(markdown)
         else
             local tag, offset = trie.find_longest(markdown_trie, markdown, i)
             if tag then
-                for index, tag_index in table_ext.rpairs(tags) do
+                for index, tag_index in modlib.table.rpairs(tags) do
                     local conversion = res[tag_index].conversion and res[tag_index].conversion[tag.name]
                     if res[tag_index].name == tag.name or conversion then
                         if tag.space_sensitive and markdown:sub(i-1,i-1) == " " then
@@ -296,7 +296,7 @@ function markdown_to_irc(markdown)
         else
             local tag, offset = trie.find_longest(markdown_trie, markdown, i)
             if tag then
-                for index, tag_index in table_ext.rpairs(tags) do
+                for index, tag_index in modlib.table.rpairs(tags) do
                     local conversion = res[tag_index].conversion and res[tag_index].conversion[tag.name]
                     if res[tag_index].name == tag.name or conversion then
                         if tag.space_sensitive and markdown:sub(i-1,i-1) == " " then
@@ -355,7 +355,7 @@ function irc_to_markdown(irc)
                 table.insert(res, " ")
                 i=i+1
             end
-            for index, open_md in table_ext.rpairs(active) do
+            for index, open_md in modlib.table.rpairs(active) do
                 if open_md == md then
                     table.remove(active, index)
                     local i=#res
@@ -370,7 +370,7 @@ function irc_to_markdown(irc)
             table.insert(res, md)
             ::noinsert::
         elseif char == irc_disable then
-            for _, md in table_ext.rpairs(active) do
+            for _, md in modlib.table.rpairs(active) do
                 table.insert(res, md)
             end
             active={}
@@ -389,7 +389,7 @@ function irc_to_markdown(irc)
                     table.insert(res, md)
                 end
             else
-                for index, open_md in table_ext.rpairs(active) do
+                for index, open_md in modlib.table.rpairs(active) do
                     if open_md == "||" then
                         table.remove(active, index)
                         local j=#res
@@ -406,7 +406,7 @@ function irc_to_markdown(irc)
         end
         i=i+1
     end
-    for _, thing in table_ext.rpairs(active) do
+    for _, thing in modlib.table.rpairs(active) do
         table.insert(res, thing)
     end
     return table.concat(res)
@@ -423,8 +423,8 @@ end
 function table_to_hex(color)
     return string.format("%02X", color[1])..string.format("%02X", color[2])..string.format("%02X", color[3])
 end
-table_ext.add_all(conversion_table, user_defined_colors)
-local reversed = table_ext.flip(conversion_table)
+modlib.table.add_all(conversion_table, user_defined_colors)
+local reversed = modlib.table.flip(conversion_table)
 for k, v in pairs(reversed) do
     reversed[string.upper(k)]=v
     reversed[string.lower(k)]=v
@@ -514,10 +514,10 @@ elseif color_conv == "disabled" then
 else
     local color_chooser
     if color_conv == "safest" then
-        local closest_color_basic = closest_color_finder(table_ext.process(user_defined_colors, function(k, color) return hex_to_table(color) end))
+        local closest_color_basic = closest_color_finder(modlib.table.process(user_defined_colors, function(k, color) return hex_to_table(color) end))
         color_chooser = closest_color_basic
     else
-        local closest_color_extended = closest_color_finder(table_ext.process(conversion_table, function(k, color) return hex_to_table(color) end))
+        local closest_color_extended = closest_color_finder(modlib.table.process(conversion_table, function(k, color) return hex_to_table(color) end))
         color_chooser = closest_color_extended
     end
     function convert_color_to_irc(color)

@@ -11,39 +11,39 @@ irc_bridge = bridge
 
 bridge.listen(function(line)
     local linecontent=line:sub(6)
-    if string_ext.starts_with(line, "[MSG]") then
-        local parts=string_ext.split(linecontent, " ", 2)
+    if modlib.text.starts_with(line, "[MSG]") then
+        local parts=modlib.text.split(linecontent, " ", 2)
         local src=parts[1].."[irc]"
         local adv_msg=message.new(chatters[src], nil, parts[2])
         adv_msg.sent_to="irc"
         send_to_all(adv_msg)
-    elseif string_ext.starts_with(line, "[PMS]") then
-        local parts=string_ext.split(linecontent, " ", 1)
+    elseif modlib.text.starts_with(line, "[PMS]") then
+        local parts=modlib.text.split(linecontent, " ", 1)
         local source=parts[1]
         local target=parts[2]
         local msg=parts[3]
-        if string_ext.ends_with(target, "[discord]") then
+        if modlib.text.ends_with(target, "[discord]") then
             discord_bridge.write("[PMS]"..source.." "..target.."@you : "..msg)
         else
             if minetest.get_player_by_name(target_and_msg[1]) then
                 minetest.chat_send_player(target_and_msg[2])
             end
         end
-    elseif string_ext.starts_with(line, "[CMD]") then
-        local parts=string_ext.split(linecontent, " ", 2)
+    elseif modlib.text.starts_with(line, "[CMD]") then
+        local parts=modlib.text.split(linecontent, " ", 2)
         local source=parts[1]
         local call=parts[2]
         local success, retval = call_chatcommand(source.."[irc]", call)
         local prefix="Unknown"
         if success then prefix="Success" elseif success ~= nil then prefix="Error" end
         irc_bridge.write("[PMS]"..source.." "..prefix.." : "..(retval or "No return value."))
-    elseif string_ext.starts_with(line, "[GMS]") or string_ext.starts_with(line, "[CGM]") then -- GMS = group message or CGM = channel group message
-        local parts=string_ext.split(linecontent, " ",3)
+    elseif modlib.text.starts_with(line, "[GMS]") or modlib.text.starts_with(line, "[CGM]") then -- GMS = group message or CGM = channel group message
+        local parts=modlib.text.split(linecontent, " ",3)
         local source=parts[1]
-        local targets=string_ext.split_without_limit(parts[2], ",")
+        local targets=modlib.text.split_without_limit(parts[2], ",")
         local msg=parts[3]
         local sent_to
-        if string_ext.starts_with(line, "[CGM]") then
+        if modlib.text.starts_with(line, "[CGM]") then
             sent_to="irc"
         end
         local adv_msg=message.new(chatters[source.."[discord]"], targets, msg)
@@ -55,26 +55,26 @@ bridge.listen(function(line)
         elseif (#adv_msg.invalid_mentions) > 1 then
             irc_bridge.write("[PMS]"..source.." The targets "..table.concat(adv_msg.invalid_mentions, ", ").." are inexistant.")
         end
-    elseif string_ext.starts_with(line, "[JOI]") then
-        local parts=string_ext.split(linecontent, " ", 3) --nick & color & channel
+    elseif modlib.text.starts_with(line, "[JOI]") then
+        local parts=modlib.text.split(linecontent, " ", 3) --nick & color & channel
         join(parts[1].."[irc]", {color=parts[2], roles={}, irc=true})
         local chattername=parts[1].."[irc]"
         minetest.chat_send_all(mt_color(chattername)..
             chattername..minetest.get_color_escape_sequence("#FFFFFF").." joined.", 
             minetest.get_color_escape_sequence(parts[2])..parts[1].."[irc]"..
             minetest.get_color_escape_sequence("#FFFFFF").." joined.")
-    elseif string_ext.starts_with(line, "[EXT]") then
-        local parts=string_ext.split(linecontent, " ", 2) --nick & reason
+    elseif modlib.text.starts_with(line, "[EXT]") then
+        local parts=modlib.text.split(linecontent, " ", 2) --nick & reason
         local chattername=parts[1].."[irc]"
         minetest.chat_send_all(mt_color(chattername)..chattername..minetest.get_color_escape_sequence("#FFFFFF").." quitted ("..parts[2]..").")
         leave(chattername)
-    elseif string_ext.starts_with(line, "[BYE]") then
-        local parts=string_ext.split(linecontent, " ", 2) --nick & reason
+    elseif modlib.text.starts_with(line, "[BYE]") then
+        local parts=modlib.text.split(linecontent, " ", 2) --nick & reason
         local chattername=parts[1].."[irc]"
         minetest.chat_send_all(mt_color(chattername)..chattername..minetest.get_color_escape_sequence("#FFFFFF").." left ("..parts[2]..").")
         leave(chattername)
-    elseif string_ext.starts_with(line, "[NCK]") then
-        local parts=string_ext.split(linecontent, " ", 2) --nick & newnick
+    elseif modlib.text.starts_with(line, "[NCK]") then
+        local parts=modlib.text.split(linecontent, " ", 2) --nick & newnick
         local chattername=parts[1].."[irc]"
         local new_chattername=parts[2].."[irc]"
         rename(chattername, new_chattername)
@@ -82,7 +82,7 @@ bridge.listen(function(line)
 end)
 
 -- Pinging
-mt_ext.register_globalstep(1, function()
+modlib.minetest.register_globalstep(1, function()
     bridge.write("[PIN]")
 end)
 

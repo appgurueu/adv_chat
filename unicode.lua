@@ -17,7 +17,7 @@ function parse_utf8_codepoints(message, pattern)
         end
         number=tonumber(number, 16)
         if number then
-            local utf_8_char=string_ext.utf8(number)
+            local utf_8_char=modlib.text.utf8(number)
             if utf_8_char then
                 table.insert(rope, message:sub(last_index, begin-1))
                 table.insert(rope, utf_8_char)

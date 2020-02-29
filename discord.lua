@@ -28,19 +28,19 @@ discord_bridge = bridge
 
 bridge.listen(function(line)
     local linecontent=line:sub(6)
-    if string_ext.starts_with(line, "[MSG]") then
-        local parts=string_ext.split(linecontent, " ", 2)
+    if modlib.text.starts_with(line, "[MSG]") then
+        local parts=modlib.text.split(linecontent, " ", 2)
         local src=parts[1].."[discord]"
         local adv_msg=message.new(chatters[src], nil, parts[2])
         adv_msg.sent_to="discord"
         send_to_all(adv_msg)
-    elseif string_ext.starts_with(line, "[GMS]") or string_ext.starts_with(line, "[CGM]") then -- GMS = group message or CGM = channel group message
-        local parts=string_ext.split(linecontent, " ",3)
+    elseif modlib.text.starts_with(line, "[GMS]") or modlib.text.starts_with(line, "[CGM]") then -- GMS = group message or CGM = channel group message
+        local parts=modlib.text.split(linecontent, " ",3)
         local source=parts[1]
-        local targets=string_ext.split_without_limit(parts[2], ",")
+        local targets=modlib.text.split_without_limit(parts[2], ",")
         local msg=parts[3]
         local sent_to
-        if string_ext.starts_with(line, "[CGM]") then
+        if modlib.text.starts_with(line, "[CGM]") then
             sent_to="discord"
         end
         local targetset={}
@@ -56,62 +56,62 @@ bridge.listen(function(line)
         elseif (#adv_msg.invalid_mentions) > 1 then
             discord_bridge.write("[PMS]#FFFFFF "..source.." The targets "..table.concat(adv_msg.invalid_mentions, ", ").." are inexistant.")
         end
-    elseif string_ext.starts_with(line, "[CMD]") then
-        local parts=string_ext.split(linecontent, " ", 2)
+    elseif modlib.text.starts_with(line, "[CMD]") then
+        local parts=modlib.text.split(linecontent, " ", 2)
         local source=parts[1]
         local call=parts[2]
         local success, retval = call_chatcommand(source.."[discord]", call)
         local prefix = "[PMS]#FFFFFF "
         if success then prefix = "[SUC]" elseif success == false then prefix = "[ERR]" end
         discord_bridge.write(prefix..source.." "..(retval or "No return value."))
-    elseif string_ext.starts_with(line, "[JOI]") or string_ext.starts_with(line, "[LIS]") then
-        local parts=string_ext.split(linecontent, " ", 2) --nick & roles
+    elseif modlib.text.starts_with(line, "[JOI]") or modlib.text.starts_with(line, "[LIS]") then
+        local parts=modlib.text.split(linecontent, " ", 2) --nick & roles
         local chatter=parts[1].."[discord]"
         join(chatter, {color=parts[2], roles={}, discord=true})
-        if string_ext.starts_with(line, "[JOI]") then
+        if modlib.text.starts_with(line, "[JOI]") then
             minetest.chat_send_all(mt_color(chatter)..chatter..minetest.get_color_escape_sequence("#FFFFFF").." joined.")
         end
-    elseif string_ext.starts_with(line, "[EXT]") then
+    elseif modlib.text.starts_with(line, "[EXT]") then
         local chatter = linecontent .. "[discord]"
         minetest.chat_send_all(mt_color(chatter)..chatter..minetest.get_color_escape_sequence("#FFFFFF").." left.")
         leave(chatter)
-    elseif string_ext.starts_with(line, "[NCK]") then
-        local parts=string_ext.split(linecontent, " ", 2) --nick & newnick
+    elseif modlib.text.starts_with(line, "[NCK]") then
+        local parts=modlib.text.split(linecontent, " ", 2) --nick & newnick
         local chattername=parts[1].."[discord]"
         local new_chattername=parts[2].."[discord]"
         rename(chattername, new_chattername)
-    elseif string_ext.starts_with(line, "[ROL]") then
-        local parts=string_ext.split(linecontent, " ", 3) --name, color, nicks
+    elseif modlib.text.starts_with(line, "[ROL]") then
+        local parts=modlib.text.split(linecontent, " ", 3) --name, color, nicks
         if not bridges.discord.blacklist[parts[1]] then
             if not roles[parts[1]] then
                 register_role(parts[1], {color=parts[2], discord=true})
             end
             if parts[3] then
-                for _,nick in pairs(string_ext.split_without_limit(parts[3], ",")) do
+                for _,nick in pairs(modlib.text.split_without_limit(parts[3], ",")) do
                     add_role(nick.."[discord]", parts[1], "discord")
                 end
             end
         end
-    elseif string_ext.starts_with(line, "[DEL]") then --Role is deleted
+    elseif modlib.text.starts_with(line, "[DEL]") then --Role is deleted
         delete_discord_role()
-    elseif string_ext.starts_with(line, "[REM]") then --User is removed from role
-        local parts=string_ext.split(linecontent, " ", 2) --role & nick
+    elseif modlib.text.starts_with(line, "[REM]") then --User is removed from role
+        local parts=modlib.text.split(linecontent, " ", 2) --role & nick
         remove_role(parts[2].."[discord]", parts[1], "discord")
-    elseif string_ext.starts_with(line, "[ADD]") then --User is added to role
-        local parts=string_ext.split(linecontent, " ", 2) --role & nick
+    elseif modlib.text.starts_with(line, "[ADD]") then --User is added to role
+        local parts=modlib.text.split(linecontent, " ", 2) --role & nick
         add_role(parts[2].."[discord]", parts[1], "discord")
-    elseif string_ext.starts_with(line, "[NAM]") then --Role changes name
-        local parts=string_ext.split(linecontent, " ", 2) --oldname, newname
+    elseif modlib.text.starts_with(line, "[NAM]") then --Role changes name
+        local parts=modlib.text.split(linecontent, " ", 2) --oldname, newname
         if not bridges.discord.blacklist[parts[2]] then
             if roles[parts[1]].discord then
                 for chatter,_ in pairs(roles[parts[1]].affected) do
                     chatters[chatter].roles[parts[1]]=nil
                     chatters[chatter].roles[parts[2]]="discord"
                 end
-                roles[parts[2]]=table_ext.tablecopy(roles[parts[1]])
+                roles[parts[2]]=modlib.table.tablecopy(roles[parts[1]])
                 roles[parts[1]]=nil
             else
-                roles[parts[2]]=table_ext.tablecopy(roles[parts[1]])
+                roles[parts[2]]=modlib.table.tablecopy(roles[parts[1]])
                 roles[parts[2]].discord=true
                 for chatter,_ in pairs(roles[parts[1]].affected) do
                     if chatters[chatter].roles[parts[1]]=="discord" then --Move
@@ -124,8 +124,8 @@ bridge.listen(function(line)
         else
             delete_discord_role(parts[1])
         end
-    elseif string_ext.starts_with(line, "[COL]") then --Role changes color
-        local parts=string_ext.split(linecontent, " ", 2) --role & color
+    elseif modlib.text.starts_with(line, "[COL]") then --Role changes color
+        local parts=modlib.text.split(linecontent, " ", 2) --role & color
         if roles[parts[1]].discord then
             roles[parts[1]].color=parts[2]
         end
@@ -133,7 +133,7 @@ bridge.listen(function(line)
 end)
 
 -- Pinging
-mt_ext.register_globalstep(1, function()
+modlib.minetest.register_globalstep(1, function()
     bridge.write("[PIN]")
 end)
 

@@ -2,7 +2,7 @@
 
 register_hud_channel("score", {mode="stack", hud_base_position={x=0.6, y=0.5}, autoremove_interval=4})
 
-mt_ext.register_globalstep(1, function()
+modlib.minetest.register_globalstep(1, function()
     if math.random() > 0.5 then
         local choice=math.random(1, 3)
         local text=({"-", "+", "~"})[choice]..tostring(math.random(1, 50))
