@@ -1,9 +1,5 @@
 --- THIS FILE USES CUSTOM STUFF (IFNDEFS) IMPLEMENTED USING MODLIB - DON'T CHANGE THE WAY IT IS EXECUTED IN init.lua
 
--- TODO (planned features)
--- * log config (should messages which are not sent to all, pms be logged etc), issues with GDPR and similar stuff possible
--- * add commands for registering/unregistering roles & adding/removing roles, but this is more of an API
-
 modlib.log.create_channel("adv_chat") -- Create log channel
 modlib.data.create_mod_storage("adv_chat") --Create mod storage
 modlib.player.set_property_default("adv_chat.roles",{})
@@ -366,16 +362,18 @@ end
 function send_to_players(msg, players, origin)
     for playername,_ in pairs(players) do
         local blocked=modlib.player.get_property(playername, "chatroles.blocked")
-        if blocked.players[origin] then
-            goto continue
+        if not blocked.players[origin] then
+            local send = true
             for role,_ in ipairs(blocked.roles) do
                 if roles[role].affected[origin] then
-                    goto continue
+                    send = false
+                    break
                 end
             end
+            if send then
+                minetest.chat_send_player(playername, msg)
+            end
         end
-        minetest.chat_send_player(playername, msg)
-        ::continue::
     end
 end
 

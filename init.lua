@@ -15,7 +15,11 @@ modlib.mod.extend_string("adv_chat", modlib.text.handle_ifndefs(modlib.file.read
 -- Basic API stuff
 modlib.mod.extend("adv_chat", "unicode")
 modlib.mod.extend("adv_chat", "closest_color")
-modlib.mod.extend("adv_chat", "trie")
+if cmdlib.trie then
+    adv_chat.trie = cmdlib.trie
+else
+    modlib.mod.extend("adv_chat", "trie")
+end
 modlib.mod.extend("adv_chat", "text_styles")
 modlib.mod.extend("adv_chat", "message")
 modlib.mod.extend("adv_chat", "hud_channels")

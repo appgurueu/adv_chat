@@ -237,7 +237,7 @@ public class Main {
             PROCESS_BRIDGE.write("[BYE]"+nick+" "+(params.size() >= 2 ? params.get(1):"no reason"));
         });
 
-        // TODO Probably Ident & SASL negotiation ?
+        // Probably Ident & SASL negotiation ?
         //chat_bridge.send("CAP LS 302");
         CHAT_BRIDGE.send("NICK "+nickname);
         CHAT_BRIDGE.send("USER Minetest null null :Minetest Chat Bridge"); // 0 *

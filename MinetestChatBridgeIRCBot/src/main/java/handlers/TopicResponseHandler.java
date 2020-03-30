@@ -10,7 +10,7 @@ import java.util.List;
 public class TopicResponseHandler extends NumericTimeoutResponseHandler {
     public String provided_topic;
 
-    public TopicResponseHandler() { // TODO probably Consumer<String> for topic
+    public TopicResponseHandler() {
         super(20000);
         provided_topic=null;
     }

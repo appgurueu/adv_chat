@@ -1,4 +1,3 @@
--- TODO work on this
 -- Support for : Colors | Styles
 -- Minetest :    Yes    | No
 -- IRC :         Yes    | Yes
@@ -134,17 +133,18 @@ function strip_markdown(markdown)
     local tags={}
     while i <= markdown:len() do
         local char = markdown:sub(i,i)
+        local function process()
         if char == markdown_code_tag then
             local closing = markdown:find("[^\\]`", i+1)
             if closing then
                 table.insert(res, markdown:sub(i+1, closing))
                 i=closing+1
-                goto continue
+                return
             end
         elseif char == "\\" and md_escape[markdown:sub(i+1,i+1)] then
             table.insert(res, markdown:sub(i+1,i+1))
             i=i+1
-            goto continue
+            return
         elseif char == " " then
             if res[#res] and res[#res].space_sensitive then
                 res[#res] = res[#res].reversed
@@ -174,17 +174,18 @@ function strip_markdown(markdown)
                             end
                         end
                         i=offset
-                        goto continue
+                        return
                     end
                 end
                 table.insert(res, tag)
                 table.insert(tags, #res)
                 i=offset
-                goto continue
+                return
             end
         end
         table.insert(res, char)
-        ::continue::
+        end
+        process()
         i=i+1
     end
     for _, tag in pairs(tags) do
@@ -201,6 +202,7 @@ function markdown_to_irc(markdown)
     local tags={}
     while i <= markdown:len() do
         local char = markdown:sub(i,i)
+        local function process()
         if char == markdown_code_tag then
             local closing = markdown:find("[^\\]`", i+1)
             if closing then
@@ -208,12 +210,12 @@ function markdown_to_irc(markdown)
                 table.insert(res, markdown:sub(i+1, closing))
                 table.insert(res, irc_monospace)
                 i=closing+1
-                goto continue
+                return
             end
         elseif char == "\\" and md_escape[markdown:sub(i+1,i+1)] then
             table.insert(res, markdown:sub(i+1,i+1))
             i=i+1
-            goto continue
+            return
         elseif char == " " then
             if res[#res] and res[#res].space_sensitive then
                 res[#res] = res[#res].reversed
@@ -247,17 +249,18 @@ function markdown_to_irc(markdown)
                             end
                         end
                         i=offset
-                        goto continue
+                        return
                     end
                 end
                 table.insert(res, tag)
                 table.insert(tags, #res)
                 i=offset
-                goto continue
+                return
             end
         end
         table.insert(res, char)
-        ::continue::
+        end
+        process()
         i=i+1
     end
     for _, tag in pairs(tags) do
@@ -275,6 +278,7 @@ function markdown_to_irc(markdown)
     local tags={}
     while i <= markdown:len() do
         local char = markdown:sub(i,i)
+        local function process()
         if char == markdown_code_tag then
             local closing = markdown:find("[^\\]`", i+1)
             if closing then
@@ -282,12 +286,12 @@ function markdown_to_irc(markdown)
                 table.insert(res, markdown:sub(i+1, closing))
                 table.insert(res, irc_monospace)
                 i=closing+1
-                goto continue
+                return
             end
         elseif char == "\\" and md_escape[markdown:sub(i+1,i+1)] then
             table.insert(res, markdown:sub(i+1,i+1))
             i=i+1
-            goto continue
+            return
         elseif char == " " then
             if res[#res] and res[#res].space_sensitive then
                 res[#res] = res[#res].reversed
@@ -321,17 +325,18 @@ function markdown_to_irc(markdown)
                             end
                         end
                         i=offset
-                        goto continue
+                        return
                     end
                 end
                 table.insert(res, tag)
                 table.insert(tags, #res)
                 i=offset
-                goto continue
+                return
             end
         end
         table.insert(res, char)
-        ::continue::
+        end
+        process()
         i=i+1
     end
     for _, tag in pairs(tags) do
@@ -355,6 +360,7 @@ function irc_to_markdown(irc)
                 table.insert(res, " ")
                 i=i+1
             end
+            local insert = true
             for index, open_md in modlib.table.rpairs(active) do
                 if open_md == md then
                     table.remove(active, index)
@@ -363,12 +369,14 @@ function irc_to_markdown(irc)
                         i=i-1
                     end
                     table.insert(res, i+1, md)
-                    goto noinsert
+                    insert = false
+                    break
                 end
             end
-            table.insert(active, md)
-            table.insert(res, md)
-            ::noinsert::
+            if insert then
+                table.insert(active, md)
+                table.insert(res, md)
+            end
         elseif char == irc_disable then
             for _, md in modlib.table.rpairs(active) do
                 table.insert(res, md)
@@ -400,7 +408,7 @@ function irc_to_markdown(irc)
                     end
                 end
             end
-            i=skip_color_code(text, i)
+            i=skip_color_code(irc, i)
         else
             table.insert(res, char)
         end
@@ -543,25 +551,28 @@ function minetest_to_irc(message)
     local i=1
     local res={}
     while i <= message:len() do
+        local color
         if message:sub(i,i) == minetest_color_starter and message:sub(i+1, i+4) == "(c@#" and message:sub(i+11, i+11) == ")" then
-            local color = message:sub(i+5, i+10)
+            is_color = true
+            color = message:sub(i+5, i+10)
             for j=1, 6 do
                 local c = color:sub(j, j):lower()
                 if not (c >= "0" and c <= "9") and not (c >= "a" and c <= "f") then
-                    goto continue
+                    color = nil
+                    break
                 end
             end
+        end
+        if color then
             local needs_escape, color = convert_color_to_irc(color)
             table.insert(res, color)
             if needs_escape and needs_escape(message:sub(i+12, i+12)) then
                 table.insert(res, irc_escape_code)
             end
             i=i+11
-            goto continue_loop
-            ::continue::
+        else
+            table.insert(res, message:sub(i,i))
         end
-        table.insert(res, message:sub(i,i))
-        ::continue_loop::
         i=i+1
     end
     return table.concat(res)
