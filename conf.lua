@@ -51,6 +51,8 @@ local conf_spec={type="table", children={
             command_whitelist={type="table", keys={type="number"}, values={type="string"}}
         }
     }
+}, possible_children={
+    roles_case_insensitive={type="boolean"}
 }}
 
 local config=modlib.conf.import("adv_chat", conf_spec)

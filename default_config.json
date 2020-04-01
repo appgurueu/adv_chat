@@ -3,9 +3,9 @@
     "minetest" : {"message_prefix": "", "message_suffix": "", "mention_prefix": "#FFFF00@", "mention_delim": "#FFFF00, ", "content_prefix": "#FFFF00: #FFFFFF"}, 
     "other" : null
   },
-
   "bridges" : {
     "discord" : null,
     "irc" : null
-  }
+  },
+  "roles_case_insensitive": true
 }

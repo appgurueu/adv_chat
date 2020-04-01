@@ -56,14 +56,30 @@ Targets/Mentions: Roles or chatters mentioned using `@`
 * More configuration options
 * Remote login for chatcommand execution
 * Many under-the-hood changes cleaning up stuff & fixing bugs (improving the code & architecture)
-* See `config_help.md` and the sources for all details
 
 ### `rolling-4`
 
 * Merged `config_help.md` into the Readme
 * Adds `adv_chat.register_on_chat_message` which works much like `minetest.register_on_chat_message`
 * Adds basic logging (of global messages)
-* See the sources for details
+
+### `rolling-5`
+
+* Various fixes
+* API additions
+
+### `rolling-6`
+
+* Replaced deprecated `modlib` and `cmdlib` calls
+
+### `rolling-7`
+
+* Replaced `goto`s for increased compatibility
+
+### `rolling-8`
+
+* Supports configuring case insensitive roles
+* Removed outdated `config_help.md`
 
 ## API
 
@@ -157,13 +173,14 @@ Located under `<modpath/gamepath>/adv_chat/default_config.json`
 ```json
 {
   "schemes" : {
-    "minetest" : {"message_prefix": "", "mention_prefix": "#FFFF00@", "mention_delim": "#FFFF00, ", "content_prefix": "#FFFF00: #FFFFFF"},
+    "minetest" : {"message_prefix": "", "message_suffix": "", "mention_prefix": "#FFFF00@", "mention_delim": "#FFFF00, ", "content_prefix": "#FFFF00: #FFFFFF"}, 
     "other" : null
   },
   "bridges" : {
     "discord" : null,
     "irc" : null
-  }
+  },
+  "roles_case_insensitive": true
 }
 ```
 
