@@ -1,16 +1,14 @@
-
-
-local socket = require("socket")
-function set_socket(sock)
-    socket=sock
-    build_bridge = (socket and build_socket_bridge) or build_file_bridge
-    set_socket=nil
-end
-
 local os_execute = os.execute
-function set_os_execute(os_exec)
-    os_execute = os_exec
-    set_os_execute = nil
+function set_insecure_environment(env)
+    os_execute = env.os.execute
+    local socket = env.require("socket")
+    assert(socket, "Install the luasocket library using luarocks")
+    function set_socket(sock)
+        socket=sock
+        build_bridge = (socket and build_socket_bridge) or build_file_bridge
+        set_socket=nil
+    end
+    set_insecure_environment = nil
 end
 
 local ping_timeout = 5
@@ -63,7 +61,6 @@ function build_socket_bridge(name, logs)
             end
         end)
     end
-    
     return self
 end
 

@@ -44,7 +44,8 @@ local conf_spec={type="table", required_children={
                     bridge={type="string", possible_values={"files", "sockets"}},
                     convert_internal_markdown={type="boolean"},
                     convert_minetest_markdown={type="boolean"},
-                    handle_irc_styles={type="string", possible_values={"escape_markdown", "convert", "disabled"}}
+                    handle_irc_styles={type="string", possible_values={"escape_markdown", "convert", "disabled"}},
+                    send_embeds={type="boolean"}
                 }
             },
             command_blacklist={type="table", keys={type="number"}, values={type="string"}},

@@ -229,7 +229,7 @@ function message.build(msg, target)
 end
 
 function message.handle_on_chat_messages(msg)
-    local on_chat_messages = call_registered_on_chat_messages(msg.chatter.name, msg.content, msg)
+    local on_chat_messages = call_registered_on_chat_messages((msg.chatter and msg.chatter.name) or "", msg.content, msg)
     if on_chat_messages then
         msg.handled_by_on_chat_messages = on_chat_messages
         return on_chat_messages

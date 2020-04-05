@@ -81,6 +81,15 @@ Targets/Mentions: Roles or chatters mentioned using `@`
 * Supports configuring case insensitive roles
 * Removed outdated `config_help.md`
 
+### `rolling-9`
+
+* Fixes [`rolling-8`]
+
+### `rolling-10`
+
+* Supports sending messages instead of embeds (discord bridge)
+* Fixes
+
 ## API
 
 ### HUD notifications
@@ -193,7 +202,7 @@ Located under `<modpath/gamepath>/adv_chat/default_config.json`
     "other" : null
   },
   "bridges" : {
-    "discord" : {"channelname":"allgemein", "prefix": "?", "minetest_prefix": "!","token":"S.U.Pxxs.E.R.T.9998OKEN", "blacklist":{"~~new_role~~":true}, "guild_id": 580416319703351296},
+    "discord" : {"channelname":"allgemein", "prefix": "?", "minetest_prefix": "!", "token":"S.U.Pxxs.E.R.T.9998OKEN", "blacklist":{"~~new_role~~":true}, "guild_id": 580416319703351296, "send_embeds": true},
     "irc" : {"channelname":"#mtchatbridgetest", "prefix": "?", "minetest_prefix": "!", "nickname": "MT_Chat_Bridge", "network":  "irc.freenode.net", "port": 7000, "ssl":  true}
   }
 }
@@ -233,6 +242,7 @@ Table with the following entries :
 * `convert_internal_markdown`/`convert_minetest_markdown`: Optional boolean. Whether Markdown sent from Minetest/internal chat messages should be left untouched as if it was Discord Markdown
 * `handle_irc_styles`: Optional string. How IRC styles should be converted to Discord Markdown. Possible values: `"disabled"`, `"escape_markdown"` and `"convert"`
 * `strip_discord_markdown_in_minetest`: Optional boolean. Whether Discord Markdown should be stripped from Minetest chat.
+* `send_embeds`: Optional boolean, whether the bot should send embeds or messages.
 
 Example :
 

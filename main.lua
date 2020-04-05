@@ -59,7 +59,7 @@ end
 channels={} --channelname -> definition : {hud_pos, mode, autoremove, max_messages, max_lines, wrap_chars, smartwrap}
 roles={} -- Role -> players -> true
 if roles_case_insensitive then
-    modlib.table.set_case_insensitive_index(teams)
+    modlib.table.set_case_insensitive_index(roles)
 end
 chatters={} -- Chatter -> stuff
 to_be_sent={} --Receiver -> { {sender, message, date, time} }

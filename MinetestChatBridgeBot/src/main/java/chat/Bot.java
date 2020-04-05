@@ -50,7 +50,7 @@ public class Bot extends ListenerAdapter {
     public EmbedBuilder success;
     public EmbedBuilder message;
 
-    public Bot(String token, ProcessBridge pb, String text_channel) throws LoginException {
+    public Bot(String token, ProcessBridge pb, String text_channel, boolean send_embeds) throws LoginException {
         Main.OUT.println("INFO: Starting client");
         JDABuilder builder=new JDABuilder(AccountType.BOT);
         builder.setToken(token);
@@ -67,8 +67,10 @@ public class Bot extends ListenerAdapter {
         success.setColor(new Color(0, 255,0));
         success.setTitle("Success");
 
-        message=new EmbedBuilder();
-
+        if (send_embeds) {
+            message=new EmbedBuilder();
+        }
+        
         jda.addEventListener(this);
     }
 
@@ -101,11 +103,7 @@ public class Bot extends ListenerAdapter {
 
     @Override
     public void onGuildJoin(GuildJoinEvent e) {
-        /*Iterator it=jda.getGuildCache().iterator();it.hasNext();
-        if (it.hasNext()) {
-            e.getGuild().leave().queue();
-        }*/
-        // IDEA: leave
+        // TODO leave
     }
     
     public String escapeName(String name) {
@@ -125,32 +123,38 @@ public class Bot extends ListenerAdapter {
         bridge.write("[EXT]"+members.inverse().get(e.getMember().getUser().getIdLong()));
     }
 
-    public synchronized MessageEmbed buildMessage(String msg, Color color) {
-        message.setColor(color);
-        message.setDescription(msg);
-        message.setTimestamp(Instant.now());
-        return message.build();
+    public synchronized Message buildMessage(String msg, Color color) {
+        MessageBuilder mb = new MessageBuilder();
+        if (message != null) {
+            message.setColor(color);
+            message.setDescription(msg);
+            message.setTimestamp(Instant.now());
+            mb.setEmbed(message.build());
+        } else {
+            mb.setContent(msg);
+        }
+        return mb.build();
     }
 
     public void sendToAll(String message, Color color) {
         sendToAll(buildMessage(message, color));
     }
 
-    public void sendToAll(MessageEmbed message) {
+    public void sendToAll(Message message) {
         jda.getTextChannelById(global_channel).sendMessage(message).queue();
     }
 
-    public void sendToMembers(String message, Color c, String... targets) {
-        sendToMembers(buildMessage(message, c), targets);
+    public void sendToMembers(String message, Color color, String... targets) {
+        sendToMembers(buildMessage(message, color), targets);
     }
 
-    public void sendToMembers(MessageEmbed m, String... targets) {
+    public void sendToMembers(Message m, String... targets) {
         for (String member:targets) {
             sendToMember(member, m);
         }
     }
 
-    public void sendToMember(String member, MessageEmbed m) {
+    public void sendToMember(String member, Message m) {
         Long member_id=members.get(member);
         if (member_id != null) {
             jda.getUserById(member_id).openPrivateChannel().queue(pc -> pc.sendMessage(m).queue());
@@ -210,14 +214,16 @@ public class Bot extends ListenerAdapter {
                 this.sendToAll(color_and_message[1], new Color(Integer.parseInt(color_and_message[0].substring(1), 16)));
             } else if (line.startsWith("[ERR]")) {
                 String[] lineparts=linecontent.split(" ", 2);
-                //error.setTimestamp(Instant.now());
                 error.setDescription(lineparts[1]);
-                sendToMember(lineparts[0], error.build());
+                MessageBuilder mb = new MessageBuilder();
+                mb.setEmbed(error.build());
+                sendToMember(lineparts[0], mb.build());
             } else if (line.startsWith("[SUC]")) {
                 String[] lineparts=linecontent.split(" ", 2);
-                //success.setTimestamp(Instant.now());
                 success.setDescription(lineparts[1]);
-                sendToMember(lineparts[0], success.build());
+                MessageBuilder mb = new MessageBuilder();
+                mb.setEmbed(success.build());
+                sendToMember(lineparts[0], mb.build());
             } else if (line.startsWith("[PMS]")) {
                 String line_content=line.substring(5);
                 String[] parts=line_content.split(" ", 3); // Color, targets and message - No need to handle stuff like blocks, already done by MT

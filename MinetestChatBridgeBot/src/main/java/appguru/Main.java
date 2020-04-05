@@ -27,23 +27,35 @@ public class Main {
     public static ProcessBridge PROCESS_BRIDGE;
     
     public static void main(String[] args) throws IOException {
-
-        if (args.length > 4) {
-            File log=new File(args[4]);
-            if (!log.isFile() || !log.canWrite()) {
-                OUT.println("ERR: Log file doesn't exist or can't be written to.");
-            } else {
-                OUT = new PrintStream(new FileOutputStream(log, true));
-                Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-                    OUT.close();
-                }));
-            }
-            if (args.length > 5) {
-                PREFIX=args[5];
-                if (args.length > 6) {
-                    DISCORD_PREFIX=args[6];
-                    if (args.length > 7) {
-                        GUILD_ID=args[7];
+        int required_args = 4;
+        if (args.length < required_args) {
+            OUT.println("ERR: Not enough arguments given ("+required_args+" required)");
+            System.exit(1);
+        }
+        boolean send_embeds = true;
+        if (args.length > required_args) {
+            send_embeds = args[required_args].equalsIgnoreCase("true");
+            required_args++;
+            if (args.length > required_args) {
+                File log=new File(args[required_args]);
+                if (!log.isFile() || !log.canWrite()) {
+                    OUT.println("ERR: Log file doesn't exist or can't be written to.");
+                } else {
+                    OUT = new PrintStream(new FileOutputStream(log, true));
+                    Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                        OUT.close();
+                    }));
+                }
+                required_args++;
+                if (args.length > required_args) {
+                    PREFIX=args[required_args];
+                    required_args++;
+                    if (args.length > required_args) {
+                        DISCORD_PREFIX=args[required_args];
+                        required_args++;
+                        if (args.length > required_args) {
+                            GUILD_ID=args[required_args];
+                        }
                     }
                 }
             }
@@ -80,7 +92,7 @@ public class Main {
         }
 
         try {
-            Bot i=new Bot(token, PROCESS_BRIDGE, channelname);
+            Bot i=new Bot(token, PROCESS_BRIDGE, channelname, send_embeds);
 
             i.registerInfo("status", "Status", "", Color.CYAN, null);
             i.registerCommand("status", new StatusCommand());
@@ -95,8 +107,7 @@ public class Main {
                     "• Minetest chatcommands - Use `"+PREFIX+"` as prefix\n"+
                     "**More**\n"+
                     "• See the GitHub Readme linked in the title",Color.GREEN, null);
-        }
-        catch (LoginException e) {
+        } catch (LoginException e) {
             System.out.println("ERR: Invalid token. Login failed.");
             return;
         }

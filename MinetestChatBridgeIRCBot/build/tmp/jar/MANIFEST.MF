@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Created-By: Gradle 4.10.2
+Main-Class: appguru.Main
+

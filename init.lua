@@ -1,7 +1,7 @@
 adv_chat={}
 modlib.mod.extend("adv_chat", "conf")
 
--- Some IFNDEFS hehe
+-- Some IFNDEFS
 local bridge_ifndefs={
     bridge=adv_chat.bridges.discord or adv_chat.bridges.irc,
     discord=adv_chat.bridges.discord,
@@ -28,15 +28,13 @@ modlib.mod.extend("adv_chat", "hud_channels")
 if bridge_ifndefs.bridge then
     modlib.mod.extend("adv_chat", "chatcommands")
     modlib.mod.extend("adv_chat", "process_bridges")
-    
     local env = minetest.request_insecure_environment() or error("Error: adv_chat needs to be added to the trusted mods for chat bridges to work. See the Readme for more info.")
-    adv_chat.set_os_execute(env.os.execute)
+    adv_chat.set_insecure_environment(env)
     adv_chat.set_socket(env.require("socket"))
 
     if adv_chat.bridges.irc then
         modlib.mod.extend("adv_chat", "irc")
     end
-    
     if adv_chat.bridges.discord then
         modlib.mod.extend("adv_chat", "discord")
     end

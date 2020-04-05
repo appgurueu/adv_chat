@@ -1,4 +1,2 @@
-/MinetestChatBridgeBot/.gradle/
-/MinetestChatBridgeBot/build/
-/MinetestChatBridgeIRCBot/.gradle/
-/MinetestChatBridgeIRCBot/build/
+./MinetestChatBridgeBot/.gradle
+./MinetestChatBridgeIRCBot/.gradle
