@@ -1,13 +1,9 @@
 local os_execute = os.execute
 function set_insecure_environment(env)
+    env = env or _G
     os_execute = env.os.execute
     local socket = env.require("socket")
-    assert(socket, "Install the luasocket library using luarocks")
-    function set_socket(sock)
-        socket=sock
-        build_bridge = (socket and build_socket_bridge) or build_file_bridge
-        set_socket=nil
-    end
+    build_bridge = (socket and build_socket_bridge) or build_file_bridge
     set_insecure_environment = nil
 end
 
@@ -99,5 +95,3 @@ function build_file_bridge(name, input, output, logs)
     end
     return self
 end
-
-build_bridge = (socket and build_socket_bridge) or build_file_bridge
