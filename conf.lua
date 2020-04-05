@@ -6,7 +6,7 @@ local schemedef={children={
     message_suffix={type="string"},
 }}
 
-local conf_spec={type="table", children={
+local conf_spec={type="table", required_children={
     schemes={type="table", required_children={
         minetest=schemedef
     }, possible_children={

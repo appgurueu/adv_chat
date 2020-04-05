@@ -59,15 +59,7 @@ end
 channels={} --channelname -> definition : {hud_pos, mode, autoremove, max_messages, max_lines, wrap_chars, smartwrap}
 roles={} -- Role -> players -> true
 if roles_case_insensitive then
-    -- change indexing to always use lower
-    setmetatable(roles, {
-        __index = function(table, key)
-            return table[key:lower()]
-        end,
-        __newindex = function(table, key, value)
-            table[key:lower()] = value
-        end
-    })
+    modlib.table.set_case_insensitive_index(teams)
 end
 chatters={} -- Chatter -> stuff
 to_be_sent={} --Receiver -> { {sender, message, date, time} }
