@@ -63,21 +63,16 @@ if roles_case_insensitive then
 end
 chatters={} -- Chatter -> stuff
 to_be_sent={} --Receiver -> { {sender, message, date, time} }
-scheme={minetest={mention_prefix=minetest.get_color_escape_sequence("#FFFF66").."@", mention_delim=minetest.get_color_escape_sequence("#FFFF66")..", ",
-        delim=minetest.get_color_escape_sequence("#FFFF66").." : "..minetest.get_color_escape_sequence("#FFFFFF")},
-        other={mention_prefix="@", mention_delim=", ",
-                  delim=" : "}}
 
 function save_data()
     modlib.data.save_json("chatroles", "to_be_sent", to_be_sent)
 end
 
-to_be_sent=modlib.data.load_json("chatroles","to_be_sent") or {}
+to_be_sent = modlib.data.load_json("chatroles", "to_be_sent") or {}
 
 modlib.minetest.register_globalstep(30, save_data) -- TODO introduce config var
 minetest.register_on_shutdown(save_data)
 
--- TODO override minetest chat send player ?
 function is_blocked(target, source)
     if not chatters[target] then return false end
     local blocked=chatters[target].blocked
@@ -191,9 +186,10 @@ function join(name, def)
             end
             local message
             if def.minetest then
-                message="["..datepart..m.time.."] "..minetest.get_color_escape_sequence(sender_color)..m.sender..scheme.minetest.delim..m.message
+                message="["..datepart..m.time.."] "..minetest.get_color_escape_sequence(sender_color)..
+                    m.sender..schemes.minetest.content_prefix..m.message
             else
-                message="["..datepart..m.time.."] "..m.sender..scheme.other.delim..m.message
+                message="["..datepart..m.time.."] "..m.sender..schemes.other.content_prefix..m.message
             end
             send_to_chatter(m.sender, name, message)
         end
@@ -396,42 +392,7 @@ function parse_message(message)
     return colorize_message(parse_unicode(message))
 end
 
-function build_message(sender, mentions, message)
-    local mt_msg, other_msg=parse_message(minetest.strip_colors(message))
-    local sender_color=get_color(sender)
-    local invalid_mentions={}
-    local known_mentions={}
-    local mt_mentionpart={}
-    --IFNDEF bridge
-    local mentionpart={}
-    --ENDIF
-    for _, mention in ipairs(mentions) do
-        if not known_mentions[mention] then
-            known_mentions[mention]=true
-            if roles[mention] then
-                table.insert(mt_mentionpart,minetest.get_color_escape_sequence(roles[mention].color)..mention)
-                --IFNDEF bridge
-                table.insert(mentionpart, mention)
-                --ENDIF
-            elseif chatters[mention] then
-                table.insert(mt_mentionpart,minetest.get_color_escape_sequence(chatters[mention].color)..mention)
-                --IFNDEF bridge
-                table.insert(mentionpart,mention)
-                --ENDIF
-            else
-                table.insert(invalid_mentions,mention) -- TODO add config
-            end
-        end
-    end
-
-    return invalid_mentions,
-    --IFNDEF bridge
-    sender..scheme.other.mention_prefix..table.concat(mentionpart,scheme.other.mention_delim)..scheme.other.delim..other_msg,
-    --ENDIF
-    minetest.get_color_escape_sequence(sender_color)..sender..scheme.minetest.mention_prefix..table.concat(mt_mentionpart,scheme.minetest.mention_delim)..scheme.minetest.delim..mt_msg
-end
-
-on_chat_message=function(sender, msg)
+function on_chat_message(sender, msg)
     local mentions={}
     local msg_content=msg
     if msg:sub(1,1)=="@" then
