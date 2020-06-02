@@ -1,0 +1,41 @@
+adv_chat.schemes.minetest.mention_delim (Adv chat schemes minetest mention_delim) string #FFFF00, 
+adv_chat.schemes.minetest.content_prefix (Adv chat schemes minetest content_prefix) string #FFFF00: #FFFFFF
+adv_chat.schemes.minetest.message_prefix (Adv chat schemes minetest message_prefix) string 
+adv_chat.schemes.minetest.mention_prefix (Adv chat schemes minetest mention_prefix) string #FFFF00@
+adv_chat.schemes.minetest.message_suffix (Adv chat schemes minetest message_suffix) string 
+adv_chat.schemes.discord.mention_delim (Adv chat schemes discord mention_delim) string 
+adv_chat.schemes.discord.content_prefix (Adv chat schemes discord content_prefix) string 
+adv_chat.schemes.discord.message_prefix (Adv chat schemes discord message_prefix) string 
+adv_chat.schemes.discord.mention_prefix (Adv chat schemes discord mention_prefix) string 
+adv_chat.schemes.discord.message_suffix (Adv chat schemes discord message_suffix) string 
+adv_chat.schemes.irc.mention_delim (Adv chat schemes irc mention_delim) string 
+adv_chat.schemes.irc.content_prefix (Adv chat schemes irc content_prefix) string 
+adv_chat.schemes.irc.message_prefix (Adv chat schemes irc message_prefix) string 
+adv_chat.schemes.irc.mention_prefix (Adv chat schemes irc mention_prefix) string 
+adv_chat.schemes.irc.message_suffix (Adv chat schemes irc message_suffix) string 
+
+adv_chat.bridges.discord.minetest_prefix (Adv chat bridges discord minetest_prefix) string 
+adv_chat.bridges.discord.prefix (Adv chat bridges discord prefix) string 
+adv_chat.bridges.discord.token (Adv chat bridges discord token) string 
+adv_chat.bridges.discord.channelname (Adv chat bridges discord channelname) string 
+
+adv_chat.bridges.discord.handle_irc_styles (Adv chat bridges discord handle_irc_styles) string 
+adv_chat.bridges.discord.send_embeds (Adv chat bridges discord send_embeds) bool false
+adv_chat.bridges.discord.guild_id (Adv chat bridges discord guild_id) string 
+adv_chat.bridges.discord.convert_internal_markdown (Adv chat bridges discord convert_internal_markdown) bool false
+
+adv_chat.bridges.discord.bridge (Adv chat bridges discord bridge) string 
+adv_chat.bridges.discord.convert_minetest_markdown (Adv chat bridges discord convert_minetest_markdown) bool false
+
+adv_chat.bridges.irc.ssl (Adv chat bridges irc ssl) bool false
+adv_chat.bridges.irc.minetest_prefix (Adv chat bridges irc minetest_prefix) string 
+adv_chat.bridges.irc.nickname (Adv chat bridges irc nickname) string 
+adv_chat.bridges.irc.network (Adv chat bridges irc network) string 
+adv_chat.bridges.irc.port (Adv chat bridges irc port) float  0.000000 65535.000000
+adv_chat.bridges.irc.prefix (Adv chat bridges irc prefix) string 
+adv_chat.bridges.irc.channelname (Adv chat bridges irc channelname) string 
+adv_chat.bridges.irc.handle_discord_markdown (Adv chat bridges irc handle_discord_markdown) bool false
+adv_chat.bridges.irc.handle_minetest_markdown (Adv chat bridges irc handle_minetest_markdown) bool false
+adv_chat.bridges.irc.bridge (Adv chat bridges irc bridge) string 
+adv_chat.bridges.irc.convert_minetest_colors (Adv chat bridges irc convert_minetest_colors) string 
+adv_chat.roles_case_insensitive (Adv chat roles_case_insensitive) bool true

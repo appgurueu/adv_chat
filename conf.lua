@@ -1,10 +1,13 @@
-local schemedef={children={
-    message_prefix={type="string"},
-    mention_prefix={type="string"},
-    mention_delim={type="string"},
-    content_prefix={type="string"},
-    message_suffix={type="string"}
-}}
+local schemedef={
+    type = "table",
+    children={
+        message_prefix={type="string"},
+        mention_prefix={type="string"},
+        mention_delim={type="string"},
+        content_prefix={type="string"},
+        message_suffix={type="string"}
+    }
+}
 
 local conf_spec={type="table", required_children={
     schemes={type="table", required_children={
