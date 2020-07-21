@@ -30,10 +30,11 @@ local conf_spec={type="table", required_children={
                 },
                 possible_children={
                     bridge={type="string", possible_values={"files", "sockets"}},
-                    convert_minetest_colors={type="string", possible_values={"disabled", "hex", "safer", "safest"}}, 
+                    convert_minetest_colors={type="string", possible_values={"disabled", "hex", "safer", "safest"}},
                     handle_discord_markdown={type="boolean"},
                     handle_minetest_markdown={type="boolean"}
-                }},
+                }
+            },
             discord={type="table", required_children={
                     token={type="string"},
                     channelname={type="string"},

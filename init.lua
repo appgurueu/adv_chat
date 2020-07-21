@@ -1,5 +1,6 @@
-adv_chat={}
-modlib.mod.extend("adv_chat", "conf")
+local mod = modlib.mod
+mod.create_namespace()
+mod.extend("conf")
 
 -- Some IFNDEFS
 local bridge_ifndefs={
@@ -8,34 +9,34 @@ local bridge_ifndefs={
     irc=adv_chat.bridges.irc
 }
 
-modlib.mod.extend_string("adv_chat", modlib.text.handle_ifndefs(modlib.file.read(modlib.mod.get_resource("adv_chat", "colorize_message.lua")), bridge_ifndefs))
+mod.extend_string(modlib.text.handle_ifndefs(modlib.file.read(mod.get_resource("colorize_message.lua")), bridge_ifndefs))
 
-modlib.mod.extend_string("adv_chat", modlib.text.handle_ifndefs(modlib.file.read(modlib.mod.get_resource("adv_chat", "main.lua")), bridge_ifndefs))
+mod.extend_string(modlib.text.handle_ifndefs(modlib.file.read(mod.get_resource("main.lua")), bridge_ifndefs))
 
 -- Basic API stuff
-modlib.mod.extend("adv_chat", "unicode")
-modlib.mod.extend("adv_chat", "closest_color")
+mod.extend("unicode")
+mod.extend("closest_color")
 if cmdlib.trie then
     adv_chat.trie = cmdlib.trie
 else
-    modlib.mod.extend("adv_chat", "trie")
+    mod.extend("trie")
 end
-modlib.mod.extend("adv_chat", "text_styles")
-modlib.mod.extend("adv_chat", "message")
-modlib.mod.extend("adv_chat", "hud_channels")
+mod.extend("text_styles")
+mod.extend("message")
+mod.extend("hud_channels")
 
 -- Chat bridges
 if bridge_ifndefs.bridge then
-    modlib.mod.extend("adv_chat", "chatcommands")
-    modlib.mod.extend("adv_chat", "process_bridges")
+    mod.extend("chatcommands")
+    mod.extend("process_bridges")
     local env = minetest.request_insecure_environment() or error("Error: adv_chat needs to be added to the trusted mods for chat bridges to work. See the Readme for more info.")
     adv_chat.set_insecure_environment(env)
 
     if adv_chat.bridges.irc then
-        modlib.mod.extend("adv_chat", "irc")
+        mod.extend("irc")
     end
     if adv_chat.bridges.discord then
-        modlib.mod.extend("adv_chat", "discord")
+        mod.extend("discord")
     end
 
     adv_chat.build_socket_bridge = nil
@@ -45,5 +46,5 @@ end
 
 -- Tests - don't uncomment unless you actually want to test something
 --[[
--- -- -- modlib.mod.extend("adv_chat", "test")
+-- -- -- mod.extend("test")
 ]]
