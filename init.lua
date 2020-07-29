@@ -2,16 +2,9 @@ local mod = modlib.mod
 mod.create_namespace()
 mod.extend("conf")
 
--- Some IFNDEFS
-local bridge_ifndefs={
-    bridge=adv_chat.bridges.discord or adv_chat.bridges.irc,
-    discord=adv_chat.bridges.discord,
-    irc=adv_chat.bridges.irc
-}
+mod.extend_string("colorize_message.lua")
 
-mod.extend_string(modlib.text.handle_ifndefs(modlib.file.read(mod.get_resource("colorize_message.lua")), bridge_ifndefs))
-
-mod.extend_string(modlib.text.handle_ifndefs(modlib.file.read(mod.get_resource("main.lua")), bridge_ifndefs))
+mod.extend("main")
 
 -- Basic API stuff
 mod.extend("unicode")
@@ -26,7 +19,7 @@ mod.extend("message")
 mod.extend("hud_channels")
 
 -- Chat bridges
-if bridge_ifndefs.bridge then
+if adv_chat.bridges.irc or adv_chat.bridges.discord then
     mod.extend("chatcommands")
     mod.extend("process_bridges")
     local env = minetest.request_insecure_environment() or error("Error: adv_chat needs to be added to the trusted mods for chat bridges to work. See the Readme for more info.")

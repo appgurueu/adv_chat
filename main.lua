@@ -1,7 +1,8 @@
---- THIS FILE USES CUSTOM STUFF (IFNDEFS) IMPLEMENTED USING MODLIB - DON'T CHANGE THE WAY IT IS EXECUTED IN init.lua
+local const_irc, const_discord = bridges.irc, bridges.discord
+local const_bridge = const_irc or const_discord
 
 modlib.log.create_channel("adv_chat") -- Create log channel
-modlib.data.create_mod_storage("adv_chat") --Create mod storage
+modlib.data.create_mod_storage("adv_chat") -- Create mod storage
 modlib.player.set_property_default("adv_chat.roles",{})
 modlib.player.set_property_default("adv_chat.blocked",{chatters={}, roles={}})
 
@@ -92,16 +93,16 @@ function send_to_chatter(sendername, chattername, message)
     if chatters[chattername].minetest then
         minetest.chat_send_player(chattername, sendername)
     else
-        --IFNDEF discord
-        if chatters[chattername].discord then
-            discord_bridge.write("[PMS]"..get_color(chattername).." "..chattername.." "..message)
+        if const_discord then
+            if chatters[chattername].discord then
+                discord_bridge.write("[PMS]"..get_color(chattername).." "..chattername.." "..message)
+            end
         end
-        --ENDIF
-        --IFNDEF irc
-        if chatters[chattername].irc then
-            irc_bridge.write("[PMS]"..chattername.." "..message)
+        if const_irc then
+            if chatters[chattername].irc then
+                irc_bridge.write("[PMS]"..chattername.." "..message)
+            end
         end
-        --ENDIF
     end
 end
 
@@ -113,9 +114,13 @@ function send_to_targets(msg)
     if message.handle_on_chat_messages(msg) then
         return msg.handled_by_on_chat_messages
     end
-    --IFNDEF bridge
-    local discord_mentioned, irc_mentioned=msg.targets.discord, msg.targets.irc
-    --ENDIF
+    local irc_mentioned, discord_mentioned
+    if const_irc then
+        irc_mentioned = msg.targets.irc
+    end
+    if const_discord then
+        discord_mentioned = msg.targets.discord
+    end
     for target, _ in pairs(msg.targets) do
         if not chatters[target] then
             if roles[target] then
@@ -127,43 +132,43 @@ function send_to_targets(msg)
     local discord_chatters={}
     local irc_chatters={}
     for chatter, _ in pairs(msg.targets) do
-        if not is_blocked(chatter, sendername) then
+        if not is_blocked(chatter, msg.chatter.name) then
             if chatters[chatter].minetest then
                 minetest.chat_send_player(chatter, message.build(msg, "minetest"))
             else
-                --IFNDEF discord
-                if chatters[chatter].discord then
-                    table.insert(discord_chatters, chatter:sub(1, chatter:len()-9))
+                if const_discord then
+                    if chatters[chatter].discord then
+                        table.insert(discord_chatters, chatter:sub(1, chatter:len()-9))
+                    end
                 end
-                --ENDIF
-                --IFNDEF irc
-                if chatters[chatter].irc then
-                    table.insert(irc_chatters, chatter:sub(1, chatter:len()-5))
+                if const_irc then
+                    if chatters[chatter].irc then
+                        table.insert(irc_chatters, chatter:sub(1, chatter:len()-5))
+                    end
                 end
-                --ENDIF
             end
         end
     end
 
-    --IFNDEF discord
-    if msg.sent_to ~= "discord" then
-        if discord_mentioned then
-            discord_bridge.write("[MSG]"..(msg.chatter.color).." "..message.build(msg, "discord"))
-        elseif #discord_chatters > 0 then
-            discord_bridge.write("[PMS]"..(msg.chatter.color).." "..table.concat(discord_chatters, ",").." "..message.build(msg, "discord"))
+    if const_discord then
+        if msg.sent_to ~= "discord" then
+            if discord_mentioned then
+                discord_bridge.write("[MSG]"..(msg.chatter.color).." "..message.build(msg, "discord"))
+            elseif #discord_chatters > 0 then
+                discord_bridge.write("[PMS]"..(msg.chatter.color).." "..table.concat(discord_chatters, ",").." "..message.build(msg, "discord"))
+            end
         end
     end
-    --ENDIF
 
-    --IFNDEF irc
-    if msg.sent_to ~= "irc" then
-        if irc_mentioned then
-            irc_bridge.write("[MSG]"..message.build(msg, "irc"))
-        elseif #irc_chatters > 0 then
-            irc_bridge.write("[PMS]"..table.concat(irc_chatters, ",").." "..message.build(msg, "irc"))
+    if const_irc then
+        if msg.sent_to ~= "irc" then
+            if irc_mentioned then
+                irc_bridge.write("[MSG]"..message.build(msg, "irc"))
+            elseif #irc_chatters > 0 then
+                irc_bridge.write("[PMS]"..table.concat(irc_chatters, ",").." "..message.build(msg, "irc"))
+            end
         end
     end
-    --ENDIF
 end
 
 function join(name, def)
@@ -243,44 +248,38 @@ function register_role(rolename, roledef)
     modlib.player.register_forbidden_name(rolename)
 end
 
---IFNDEF bridge
-minetest.original_chat_send_all=minetest.chat_send_all
-minetest.chat_send_all=function(msg)
-    local adv_message=message.new(nil, nil, msg)
-    adv_message.internal=true
-    send_to_all(adv_message)
+if const_bridge then
+    minetest.original_chat_send_all=minetest.chat_send_all
+    minetest.chat_send_all=function(msg)
+        local adv_message=message.new(nil, nil, msg)
+        adv_message.internal=true
+        send_to_all(adv_message)
+    end
+    minetest.original_chat_send_player=minetest.chat_send_player
+    minetest.chat_send_player=function(name, msg)
+        local chatter=chatters[name]
+        if not chatter then
+            return
+        end
+        if chatter.minetest then
+            return minetest.original_chat_send_player(name, msg)
+        end
+        local adv_message=message.new(nil, nil, msg)
+        adv_message.internal=true
+        local to_be_sent=message.build(adv_message, chatter.service)
+
+        if const_irc then
+            if chatter.irc then
+                irc_bridge.write("[PMS]"..chatter.name.." "..to_be_sent)
+            end
+        end
+        if const_discord then
+            if chatter.discord then
+                discord_bridge.write("[PMS]#FFFFFF "..chatter.name.." "..to_be_sent)
+            end
+        end
+    end
 end
---ENDIF
-
---IFNDEF bridge
-minetest.original_chat_send_player=minetest.chat_send_player
-minetest.chat_send_player=function(name, msg)
-    local chatter=chatters[name]
-    if not chatter then
-        return
-    end
-    if chatter.minetest then
-        return minetest.original_chat_send_player(name, msg)
-    end
-    local adv_message=message.new(nil, nil, msg)
-    adv_message.internal=true
-    local to_be_sent=message.build(adv_message, chatter.service)
---ENDIF
-
-    --IFNDEF irc
-    if chatter.irc then
-        irc_bridge.write("[PMS]"..chatter.name.." "..to_be_sent)
-    end
-    --ENDIF
-    --IFNDEF discord
-    if chatter.discord then
-        discord_bridge.write("[PMS]#FFFFFF "..chatter.name.." "..to_be_sent)
-    end
-    --ENDIF
-
---IFNDEF bridge
-end
---ENDIF
 
 register_role("minetest",{color="#66FF66"})
 
@@ -336,16 +335,16 @@ function send_to_all(msg)
     if message.handle_on_chat_messages(msg) then
         return msg.handled_by_on_chat_messages
     end
-    --IFNDEF irc
-    if msg.sent_to ~= "irc" then
-        irc_bridge.write("[MSG]"..message.build(msg, "irc"))
+    if const_irc then
+        if msg.sent_to ~= "irc" then
+            irc_bridge.write("[MSG]"..message.build(msg, "irc"))
+        end
     end
-    --ENDIF
-    --IFNDEF discord
-    if msg.sent_to ~= "discord" then
-        discord_bridge.write("[MSG]"..((msg.chatter and msg.chatter.color) or "#FFFFFF").." "..message.build(msg, "discord"))
+    if const_discord then
+        if msg.sent_to ~= "discord" then
+            discord_bridge.write("[MSG]"..((msg.chatter and msg.chatter.color) or "#FFFFFF").." "..message.build(msg, "discord"))
+        end
     end
-    --ENDIF
     if msg.sent_to ~= "minetest" then
         local mt_msg
         for _,player in pairs(minetest.get_connected_players()) do

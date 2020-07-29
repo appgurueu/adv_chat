@@ -1,14 +1,16 @@
+local const_discord = bridges.discord
 -- Converts "#XXXXXX" color codes to colors
 function colorize_message(message)
     local rope={}
-    --IFNDEF discord
-    local otherrope={}
-    --ENDIF
+    local otherrope
+    if const_discord then
+        otherrope={}
+    end
     local function append_character(c)
         table.insert(rope, c)
-        --IFNDEF discord
-        table.insert(otherrope, c)
-        --ENDIF
+        if const_discord then
+            table.insert(otherrope, c)
+        end
     end
     local i=1
     while i <= message:len() do
@@ -36,10 +38,10 @@ function colorize_message(message)
         end
         i=i+1
     end
+    if const_discord then
+        return table.concat(rope), table.concat(otherrope)
+    end
     return table.concat(rope)
-    --IFNDEF discord
-    , table.concat(otherrope)
-    --ENDIF
 end
 
 load_schemes()
