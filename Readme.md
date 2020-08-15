@@ -15,10 +15,10 @@ Code licensed under the GPLv3 (GNU Public License Version 3). Written by Lars Mu
 
 ## Links
 
-* [GitHub](https://github.com/appgurueu/voxelizer) - sources, issue tracking, contributing
+* [GitHub](https://github.com/appgurueu/adv_chat) - sources, issue tracking, contributing
 * [Discord](https://discord.gg/ysP74by) - discussion, chatting
 * [Minetest Forum](https://forum.minetest.net/viewtopic.php?f=9&t=22845) - (more organized) discussion
-* [ContentDB](https://content.minetest.net/packages/LMD/voxelizer/) - releases (downloading from GitHub is recommended)
+* [ContentDB](https://content.minetest.net/packages/LMD/adv_chat/) - releases (downloading from GitHub is recommended)
 
 ## Setup
 
