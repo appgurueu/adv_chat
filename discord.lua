@@ -151,7 +151,7 @@ minetest.register_on_mods_loaded(function()
     local token=bridges.discord.token
     local text_channel=bridges.discord.channelname
     local prefixes='"'..bridges.discord.minetest_prefix..'" "'..bridges.discord.prefix..'"'
-    local guild_id=bridges.discord.guild_id.." " or ""
+    local guild_id=bridges.discord.guild_id or ""
     local send_embeds=(bridges.discord.send_embeds and "true") or "false"
 
     bridge.start(java..' -jar "'..jarpath..'" "'..token..'" "'..text_channel..'" "%s" "%s" '..send_embeds..' "%s" '..prefixes.." "..guild_id.." &")
