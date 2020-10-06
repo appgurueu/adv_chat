@@ -2,7 +2,7 @@ local mod = modlib.mod
 mod.create_namespace()
 mod.extend("conf")
 
-mod.extend_string("colorize_message.lua")
+mod.extend("colorize_message")
 
 mod.extend("main")
 
