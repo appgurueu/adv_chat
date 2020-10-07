@@ -9,7 +9,7 @@ mod.extend("main")
 -- Basic API stuff
 mod.extend("unicode")
 mod.extend("closest_color")
-if cmdlib.trie then
+if cmdlib and cmdlib.trie then
     adv_chat.trie = cmdlib.trie
 else
     mod.extend("trie")
