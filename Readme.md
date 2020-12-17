@@ -94,6 +94,10 @@ Targets/Mentions: Roles or chatters mentioned using `@`
 
 * Does not require disabling mod security anymore
 
+### `rolling-21`
+
+* Fixes "attempt to perform arithmetic on field 'last_ping' (a nil value)" crash
+
 ## API
 
 ### HUD notifications
