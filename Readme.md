@@ -90,6 +90,10 @@ Targets/Mentions: Roles or chatters mentioned using `@`
 * Supports sending messages instead of embeds (discord bridge)
 * Fixes
 
+### `rolling-20`
+
+* Does not require disabling mod security anymore
+
 ## API
 
 ### HUD notifications

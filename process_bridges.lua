@@ -3,7 +3,10 @@ function set_insecure_environment(env)
     env = env or _G
     os_execute = env.os.execute
     local socket
+    local original_require = _G.require
+    _G.require = env.require
     pcall(function() socket = env.require"socket" end)
+    _G.require = original_require
     build_bridge = (socket and build_socket_bridge) or build_file_bridge
     set_insecure_environment = nil
 end
