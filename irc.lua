@@ -1,7 +1,7 @@
 register_role("irc",{color="#FFFF66"})
 
 local bridge
-if bridges.discord.bridge == "files" then
+if bridges.irc.bridge == "files" then
     bridge = build_file_bridge("irc")
 else
     bridge = build_bridge("irc")
@@ -60,9 +60,7 @@ bridge.listen(function(line)
         join(parts[1].."[irc]", {color=parts[2], roles={}, irc=true})
         local chattername=parts[1].."[irc]"
         minetest.chat_send_all(mt_color(chattername)..
-            chattername..minetest.get_color_escape_sequence("#FFFFFF").." joined.", 
-            minetest.get_color_escape_sequence(parts[2])..parts[1].."[irc]"..
-            minetest.get_color_escape_sequence("#FFFFFF").." joined.")
+            chattername..minetest.get_color_escape_sequence("#FFFFFF").." joined.")
     elseif modlib.text.starts_with(line, "[EXT]") then
         local parts=modlib.text.split(linecontent, " ", 2) --nick & reason
         local chattername=parts[1].."[irc]"
@@ -97,7 +95,6 @@ minetest.register_on_mods_loaded(function()
     local ssl=tostring(bridges.irc.ssl)
     local nick=bridges.irc.nickname
     local textchannel=bridges.irc.channelname
-    local prefixes='"'..bridges.discord.minetest_prefix..'" "'..bridges.discord.prefix..'"'
-
+    local prefixes='"'..bridges.irc.minetest_prefix..'" "'..bridges.irc.prefix..'"'
     bridge.start(java..' -Dfile.encoding=UTF-8 -classpath "'..classpath..'" appguru.Main '..port..' "'..network..'" '..ssl..' "'..nick..'" "'..textchannel..'" "%s" "%s" "%s" '..prefixes..' &')
 end)
