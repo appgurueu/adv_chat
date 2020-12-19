@@ -31,7 +31,7 @@ adv_chat.bridges.irc.ssl (Adv chat bridges irc ssl) bool false
 adv_chat.bridges.irc.minetest_prefix (Adv chat bridges irc minetest_prefix) string 
 adv_chat.bridges.irc.nickname (Adv chat bridges irc nickname) string 
 adv_chat.bridges.irc.network (Adv chat bridges irc network) string 
-adv_chat.bridges.irc.port (Adv chat bridges irc port) float  0.000000 65535.000000
+adv_chat.bridges.irc.port (Adv chat bridges irc port) float 0 0.000000 65535.000000
 adv_chat.bridges.irc.prefix (Adv chat bridges irc prefix) string 
 adv_chat.bridges.irc.channelname (Adv chat bridges irc channelname) string 
 adv_chat.bridges.irc.handle_discord_markdown (Adv chat bridges irc handle_discord_markdown) bool false

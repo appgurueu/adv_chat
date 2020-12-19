@@ -66,7 +66,8 @@ end
 
 function build_file_bridge(name, input, output, logs)
     modlib.file.process_bridge_build(name, input, output, logs)
-    local self = {
+    local self
+    self = {
         info={name=name, ref=modlib.file.process_bridges[name]},
         serve=function()
             return modlib.file.process_bridge_serve(name)
@@ -77,7 +78,7 @@ function build_file_bridge(name, input, output, logs)
         listen=function(line_consumer)
             function consumer(line)
                 if modlib.text.starts_with(line, "[PIN]") then
-                    self.last_ping = minetest.get_gametime() or math.huge
+                    self.last_ping = minetest.get_gametime()
                 elseif modlib.text.starts_with(line, "[KIL]") then
                     minetest.request_shutdown("adv_chat: "..name..": process terminated: "..line:sub(6))
                 else
@@ -89,8 +90,9 @@ function build_file_bridge(name, input, output, logs)
     }
     self.start=function(process)
         modlib.file.process_bridge_start(name, process, os_execute)
-        self.last_ping = minetest.get_gametime() or math.huge
+        self.last_ping = minetest.get_gametime()
         minetest.register_globalstep(function()
+            self.last_ping = self.last_ping or minetest.get_gametime()
             if minetest.get_gametime()-self.last_ping > ping_timeout then
                 minetest.request_shutdown("adv_chat: "..name..": process crashed (no ping during last "..ping_timeout.."s)")
             end
