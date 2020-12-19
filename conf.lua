@@ -29,8 +29,8 @@ local conf_spec={type="table", required_children={
                     minetest_prefix={type="string"}
                 },
                 possible_children={
-                    bridge={type="string", possible_values={"files", "sockets"}},
-                    convert_minetest_colors={type="string", possible_values={"disabled", "hex", "safer", "safest"}},
+                    bridge={type="string", possible_values=modlib.table.set{"files", "sockets"}},
+                    convert_minetest_colors={type="string", possible_values=modlib.table.set{"disabled", "hex", "safer", "safest"}},
                     handle_discord_markdown={type="boolean"},
                     handle_minetest_markdown={type="boolean"}
                 }
@@ -45,10 +45,10 @@ local conf_spec={type="table", required_children={
                     blacklist={type="table", keys={type="string"}},
                     whitelist={type="table", keys={type="string"}},
                     guild_id={type="string"},
-                    bridge={type="string", possible_values={"files", "sockets"}},
+                    bridge={type="string", possible_values=modlib.table.set{"files", "sockets"}},
                     convert_internal_markdown={type="boolean"},
                     convert_minetest_markdown={type="boolean"},
-                    handle_irc_styles={type="string", possible_values={"escape_markdown", "convert", "disabled"}},
+                    handle_irc_styles={type="string", possible_values=modlib.table.set{"escape_markdown", "convert", "disabled"}},
                     send_embeds={type="boolean"}
                 }
             },
