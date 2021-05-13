@@ -2,7 +2,10 @@ local const_irc, const_discord = bridges.irc, bridges.discord
 local const_bridge = const_irc or const_discord
 
 modlib.log.create_channel("adv_chat") -- Create log channel
-modlib.data.create_mod_storage("adv_chat") -- Create mod storage
+local data_dir = minetest.get_worldpath() .. "/data"
+minetest.mkdir(data_dir)
+to_be_sent = modlib.persistence.lua_log_file.new(data_dir .. "/adv_chat.lua", {})
+to_be_sent:init()
 modlib.player.set_property_default("adv_chat.roles",{})
 modlib.player.set_property_default("adv_chat.blocked",{chatters={}, roles={}})
 
@@ -63,16 +66,7 @@ if roles_case_insensitive then
     modlib.table.set_case_insensitive_index(roles)
 end
 chatters={} -- Chatter -> stuff
-to_be_sent={} --Receiver -> { {sender, message, date, time} }
 
-function save_data()
-    modlib.data.save_json("chatroles", "to_be_sent", to_be_sent)
-end
-
-to_be_sent = modlib.data.load_json("chatroles", "to_be_sent") or {}
-
-modlib.minetest.register_globalstep(30, save_data) -- TODO introduce config var
-minetest.register_on_shutdown(save_data)
 
 function is_blocked(target, source)
     if not chatters[target] then return false end
@@ -91,7 +85,7 @@ end
 function send_to_chatter(sendername, chattername, message)
     if is_blocked(chattername, sendername) then return end
     if chatters[chattername].minetest then
-        minetest.chat_send_player(chattername, sendername)
+        minetest.chat_send_player(chattername, message)
     else
         if const_discord then
             if chatters[chattername].discord then
@@ -180,7 +174,7 @@ function join(name, def)
     end
     def.service = ((def.minetest and "minetest") or (def.irc and "irc")) or "discord"
     chatters[name]=def
-    local to_be_received=to_be_sent[name]
+    local to_be_received=to_be_sent.root[name]
     if to_be_received then
         local date=os.date("%Y-%m-%d")
         for _, m in ipairs(to_be_received) do
@@ -199,7 +193,7 @@ function join(name, def)
             send_to_chatter(m.sender, name, message)
         end
     end
-    to_be_sent[name]=nil
+    to_be_sent:set_root(name, nil)
 end
 
 function core.send_join_message(name) end
@@ -457,10 +451,12 @@ minetest.register_chatcommand(prefix.."msg",{
             local playername=param:sub(1,delim-1)
             if minetest.player_exists(playername) or modlib.text.ends_with(playername, "[irc]") or modlib.text.ends_with(playername, "[discord]") then
                 local message=colorize_message(param:sub(delim+1))
-                if not to_be_sent[playername] then
-                    to_be_sent[playername]={}
+                if not to_be_sent.root[playername] then
+                    to_be_sent:set_root(playername, {})
                 end
-                table.insert(to_be_sent[playername],{sender=sendername, message=message, date=os.date("%Y-%m-%d"), time=os.date("%H:%M:%S")})
+                local list = to_be_sent.root[playername]
+                to_be_sent:set(list, #list+1, {sender=sendername, message=message, date=os.date("%Y-%m-%d"), time=os.date("%H:%M:%S")})
+                to_be_sent:flush()
                 return true, "Your message '"..message..minetest.get_color_escape_sequence("#FFFFFF").."' will be sent to chatter '"..playername.."' as soon as they join."
             else
                 return false, "No chatter called '"..playername.."'"

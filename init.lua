@@ -1,3 +1,4 @@
+assert(modlib.version >= 69, "Upgrade modlib to rolling-69 or newer")
 local mod = modlib.mod
 mod.create_namespace()
 mod.extend("conf")
