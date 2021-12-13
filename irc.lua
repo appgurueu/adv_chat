@@ -57,7 +57,7 @@ bridge.listen(function(line)
         end
     elseif modlib.text.starts_with(line, "[JOI]") then
         local parts=modlib.text.split(linecontent, " ", 3) --nick & color & channel
-        join(parts[1].."[irc]", {color=parts[2], roles={}, irc=true})
+        join(parts[1].."[irc]", {color=parts[2], roles={}, irc=true, service="irc"})
         local chattername=parts[1].."[irc]"
         minetest.chat_send_all(mt_color(chattername)..
             chattername..minetest.get_color_escape_sequence("#FFFFFF").." joined.")

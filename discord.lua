@@ -67,7 +67,7 @@ bridge.listen(function(line)
     elseif modlib.text.starts_with(line, "[JOI]") or modlib.text.starts_with(line, "[LIS]") then
         local parts=modlib.text.split(linecontent, " ", 2) --nick & roles
         local chatter=parts[1].."[discord]"
-        join(chatter, {color=parts[2], roles={}, discord=true})
+        join(chatter, {color=parts[2], roles={}, discord=true, service="discord"})
         if modlib.text.starts_with(line, "[JOI]") then
             minetest.chat_send_all(mt_color(chatter)..chatter..minetest.get_color_escape_sequence("#FFFFFF").." joined.")
         end
