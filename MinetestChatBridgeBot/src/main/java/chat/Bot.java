@@ -27,9 +27,13 @@ import java.util.*;
 
 import java.awt.Color;
 import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateNicknameEvent;
+import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.dv8tion.jda.api.utils.ChunkingFilter;
+import net.dv8tion.jda.api.utils.MemberCachePolicy;
 
 public class Bot extends ListenerAdapter {
-    public static int DEFAULT_COLOR=Integer.parseInt("7289DA",16); // Discord color
+    public static final int DEFAULT_COLOR=Integer.parseInt("7289DA",16); // Discord color
+    public static final String README_URL="https://github.com/appgurueu/adv_chat";
 
     public String text_channel;
     public ProcessBridge bridge;
@@ -40,7 +44,6 @@ public class Bot extends ListenerAdapter {
     }
 
     public long global_channel;
-    public String readmeURL="https://github.com/appgurueu/adv_chat";
     public HashMap<String, EmbedBuilder> embed=new HashMap();
     public HashMap<String, Command> commands=new HashMap();
     public HashBiMap<String, Long> members=HashBiMap.create();
@@ -52,8 +55,10 @@ public class Bot extends ListenerAdapter {
 
     public Bot(String token, ProcessBridge pb, String text_channel, boolean send_embeds) throws LoginException {
         Main.OUT.println("INFO: Starting client");
-        JDABuilder builder=new JDABuilder(AccountType.BOT);
-        builder.setToken(token);
+        JDABuilder builder=JDABuilder.createDefault(token)
+                .setChunkingFilter(ChunkingFilter.ALL) // load all on startup
+                .setMemberCachePolicy(MemberCachePolicy.ALL) // cache all
+                .enableIntents(GatewayIntent.GUILD_MEMBERS); // subscribe to updates
         jda=builder.build();
         bridge=pb;
 
@@ -86,13 +91,13 @@ public class Bot extends ListenerAdapter {
         }
     }
     
-    @Override
+    /*@Override
     public void onTextChannelUpdatePermissions(TextChannelUpdatePermissionsEvent event) {
         if (event.getChannel().getIdLong() == global_channel && !event.getChannel().canTalk()) {
             System.err.println("Error ! Cannot talk in global channel !");
             System.exit(1);
         }
-    }
+    }*/
     
     @Override
     public void onTextChannelUpdateNSFW(TextChannelUpdateNSFWEvent event) {}
@@ -119,7 +124,7 @@ public class Bot extends ListenerAdapter {
     }
 
     @Override
-    public void onGuildMemberLeave(GuildMemberLeaveEvent e) {
+    public void onGuildMemberRemove(GuildMemberRemoveEvent e) {
         bridge.write("[EXT]"+members.inverse().get(e.getMember().getUser().getIdLong()));
     }
 
@@ -294,11 +299,11 @@ public class Bot extends ListenerAdapter {
     public void registerInfo(String command, String title, String info, Color c, String url) {
         EmbedBuilder eb=new EmbedBuilder();
         if (url == null) {
-            eb.setTitle(title,readmeURL+"#"+title.toLowerCase());
+            eb.setTitle(title,README_URL+"#"+title.toLowerCase());
         } else {
             eb.setTitle(title,url);
         }
-        eb.setAuthor("Minetest Chat Bridge",readmeURL);
+        eb.setAuthor("Minetest Chat Bridge",README_URL);
         eb.setDescription(info /*.replace("\n-","\n•")*/);
         eb.setColor(c);
         embed.put(command,eb);
