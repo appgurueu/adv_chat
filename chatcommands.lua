@@ -1,6 +1,6 @@
 minetest.original_get_player_privs = minetest.get_player_privs
 function minetest.get_player_privs(playername)
-    if chatters[playername] then
+    if chatters[playername] and not chatters[playername].minetest then
         return {chatter=true}
     end
     return minetest.original_get_player_privs(playername)
