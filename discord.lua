@@ -108,10 +108,10 @@ bridge.listen(function(line)
                     chatters[chatter].roles[parts[1]]=nil
                     chatters[chatter].roles[parts[2]]="discord"
                 end
-                roles[parts[2]]=modlib.table.tablecopy(roles[parts[1]])
+                roles[parts[2]]=modlib.table.copy(roles[parts[1]])
                 roles[parts[1]]=nil
             else
-                roles[parts[2]]=modlib.table.tablecopy(roles[parts[1]])
+                roles[parts[2]]=modlib.table.copy(roles[parts[1]])
                 roles[parts[2]].discord=true
                 for chatter,_ in pairs(roles[parts[1]].affected) do
                     if chatters[chatter].roles[parts[1]]=="discord" then --Move
