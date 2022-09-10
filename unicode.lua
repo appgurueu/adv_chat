@@ -17,8 +17,8 @@ function parse_utf8_codepoints(message, pattern)
         end
         number=tonumber(number, 16)
         if number then
-            local utf_8_char=modlib.utf8.char(number)
-            if utf_8_char then
+            local valid, utf_8_char = pcall(modlib.utf8.char, number)
+            if valid then
                 table.insert(rope, message:sub(last_index, begin-1))
                 table.insert(rope, utf_8_char)
                 last_index=i
