@@ -1,38 +1,16 @@
-unicode_patterns={"\\u","U+"}
+local function unicode_char(hex_str)
+	local codepoint = tonumber(hex_str, 0x10)
 
-function parse_utf8_codepoints(message, pattern)
-    local last_index=0
-    local begin,index=string.find(message,pattern,0,true)
-    local rope={}
-    while index do
-        local number=""
-        local i=index
-        while i <= i+4 do
-            i=i+1
-            local char=string.upper(string.sub(message,i,i))
-            if char == "" or not ((char >= "0" and char <= "9") or (char >= "A" and char <= "F")) then
-                break
-            end
-            number=number..char
-        end
-        number=tonumber(number, 16)
-        if number then
-            local valid, utf_8_char = pcall(modlib.utf8.char, number)
-            if valid then
-                table.insert(rope, message:sub(last_index, begin-1))
-                table.insert(rope, utf_8_char)
-                last_index=i
-            end
-        end
-        begin,index=string.find(message,pattern,index,true)
-    end
-    table.insert(rope, message:sub(last_index))
-    return table.concat(rope, "")
+	local C0_control = (codepoint >= 0 and codepoint <= 0x1F) or codepoint == 0x7F
+	local C1_control = codepoint >= 0x80 and codepoint <= 0x9F
+	local surrogate = codepoint >= 0xD800 and codepoint <= 0xDFFF
+	local non_unicode = codepoint > 0x10FFFF
+
+	if not (C0_control or C1_control or surrogate or non_unicode) then
+		return modlib.utf8.char(codepoint)
+	end
 end
 
 function parse_unicode(message)
-    for _, pattern in pairs(unicode_patterns) do
-        message=parse_utf8_codepoints(message, pattern)
-    end
-    return message
+    return message:gsub("\\u(%x+)", unicode_char):gsub("U%+(%x+)", unicode_char)
 end
