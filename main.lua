@@ -239,7 +239,6 @@ end)
 
 function register_role(rolename, roledef)
     roles[rolename]={title=roledef.title, color=roledef.color or "#FFFFFF",affected={}}
-    modlib.player.register_forbidden_name(rolename)
 end
 
 if const_bridge then
@@ -279,7 +278,6 @@ register_role("minetest",{color="#66FF66"})
 
 function unregister_role(rolename)
     roles[rolename]=nil
-    modlib.player.unregister_forbidden_name(rolename)
 end
 
 function add_role(player, role, value)
