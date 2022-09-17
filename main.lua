@@ -6,8 +6,10 @@ local data_dir = minetest.get_worldpath() .. "/data"
 minetest.mkdir(data_dir)
 to_be_sent = modlib.persistence.lua_log_file.new(data_dir .. "/adv_chat.lua", {})
 to_be_sent:init()
-modlib.player.set_property_default("adv_chat.roles",{})
-modlib.player.set_property_default("adv_chat.blocked",{chatters={}, roles={}})
+
+local playerdata = modlib.minetest.playerdata(function()
+    return {blocked = {chatters={}, roles={}}}
+end)
 
 registered_on_chat_messages = {}
 
@@ -225,7 +227,12 @@ function send_leave_message(name, timed_out)
 end
 
 minetest.register_on_joinplayer(function(player)
-    join(player:get_player_name(), {color=modlib.player.get_color(player), roles={}, blocked={chatters={}, roles={}}, minetest=true})
+    join(player:get_player_name(), {
+        color=modlib.colorspec.new(player:get_nametag_attributes().color):to_string(),
+        roles={},
+        blocked={chatters={}, roles={}},
+        minetest=true
+    })
     add_role(player:get_player_name(), "minetest")
     if not call_registered_on_joinplayers(player) then
         send_join_message(player:get_player_name())
@@ -351,7 +358,7 @@ end
 
 function send_to_players(msg, players, origin)
     for playername,_ in pairs(players) do
-        local blocked=modlib.player.get_property(playername, "chatroles.blocked")
+        local blocked=playerdata[playername].blocked
         if not blocked.players[origin] then
             local send = true
             for role,_ in ipairs(blocked.roles) do
