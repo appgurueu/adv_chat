@@ -1,7 +1,6 @@
 local const_irc, const_discord = bridges.irc, bridges.discord
 local const_bridge = const_irc or const_discord
 
-modlib.log.create_channel("adv_chat") -- Create log channel
 local data_dir = minetest.get_worldpath() .. "/data"
 minetest.mkdir(data_dir)
 to_be_sent = modlib.persistence.lua_log_file.new(data_dir .. "/adv_chat.lua", {})
@@ -19,7 +18,7 @@ end
 
 register_on_chat_message(function(sendername, content, msg)
     if not msg.targets then
-        modlib.log.write("adv_chat", "[MSG] "..sendername..": "..content)
+        minetest.log("action", ("[public chat] %s: %s"):format(sendername, content))
     end
 end)
 
