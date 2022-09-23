@@ -417,7 +417,7 @@ function on_chat_message(sender, msg)
         local msg_header=msg:sub(2, delim_space-1)
         local parts=modlib.text.split_without_limit(msg_header,",")
         for _, part in pairs(parts) do
-            table.insert(mentions, modlib.text.trim(part, " "))
+            table.insert(mentions, modlib.text.trim_spacing(part))
         end
         local adv_msg=message.new(chatters[sender], mentions, msg_content)
         message.mentionpart(adv_msg)
@@ -495,7 +495,7 @@ minetest.register_chatcommand(prefix.."block", {
     description = "Block messages from chatter or role",
     privs={},
     func = function(sendername, param)
-        param=modlib.text.trim(param)
+        param=modlib.text.trim_spacing(param)
         if param:len() == 0 or (not chatters[param] and not roles[param]) then
             return false, "No valid chatter name or role given."
         end
@@ -519,7 +519,7 @@ minetest.register_chatcommand(prefix.."unblock", {
     description = "Unblock messages from chatter or role",
     privs={},
     func = function(sendername, param)
-        param=modlib.text.trim(param)
+        param=modlib.text.trim_spacing(param)
         if param:len() == 0 or (not chatters[param] and not roles[param]) then
             return false, "No valid chatter name or role given."
         end
@@ -543,7 +543,7 @@ minetest.register_chatcommand(prefix.."login", {
     description = "Log in as (fake) player to execute chatcommands as them",
     privs = {chatter=true},
     func = function(sendername, param)
-        param=modlib.text.trim(param)
+        param=modlib.text.trim_spacing(param)
         if param:len() == 0 then
             return false, "No arguments given - missing name and password."
         end
